@@ -2,7 +2,9 @@ package com.controller;
 
 import com.domain.User;
 import com.service.LoginService;
+import com.service.UserService;
 import com.utils.ResponseResult;
+import com.vo.params.RegisterParams;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -26,7 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
     @Autowired
     private LoginService loginService;
-
+    @Autowired
+    private UserService userService;
+    /**
+     * 登录模块
+     * @param user
+     * @return
+     */
     @ApiOperation(value = "用户登录", notes = "用户名,密码必填。其他不填")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userName", value = "用户名", required = true, paramType = "form"),
@@ -37,9 +45,18 @@ public class LoginController {
         return loginService.login(user);
     }
 
+    /**
+     * 注销模块
+     * @return
+     */
     @ApiOperation(value = "退出登录", notes = "直接退出,需要请求头携带token")
     @PostMapping("/user/logout")
     public ResponseResult logout() {
         return loginService.logout();
     }
+
+    public ResponseResult register(RegisterParams registerParams){
+        return userService.register(registerParams);
+    }
 }
+

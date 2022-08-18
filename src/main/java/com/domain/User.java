@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 
@@ -50,7 +49,7 @@ public class User implements Serializable {
     /**
      * 注册时间
      */
-    private Date createTime;
+    private Long createTime;
 
     /**
      * 年龄

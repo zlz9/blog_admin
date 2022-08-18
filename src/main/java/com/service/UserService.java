@@ -2,6 +2,9 @@ package com.service;
 
 import com.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.utils.ResponseResult;
+import com.vo.params.RegisterParams;
+import com.vo.params.UserParams;
 
 /**
 * @author 23340
@@ -10,4 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface UserService extends IService<User> {
 
+    User findAuthorById(Long authorId);
+
+    ResponseResult register(RegisterParams registerParams);
+
+    ResponseResult FillUserInfo(UserParams userParams);
+
+    ResponseResult getUserInfo();
 }
