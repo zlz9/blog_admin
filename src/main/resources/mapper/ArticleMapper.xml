@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mapper.ArticleMapper">
+
+    <resultMap id="BaseResultMap" type="com.domain.Article">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="commentId" column="comment_id" jdbcType="BIGINT"/>
+            <result property="authorId" column="author_id" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="delFlag" column="del_flag" jdbcType="BIT"/>
+            <result property="bodyHtml" column="body_html" jdbcType="VARCHAR"/>
+            <result property="bodyMd" column="body_md" jdbcType="VARCHAR"/>
+            <result property="viewCount" column="view_count" jdbcType="INTEGER"/>
+            <result property="weight" column="weight" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,comment_id,author_id,
+        create_time,del_flag,body_html,
+        body_md,view_count,weight
+    </sql>
+</mapper>

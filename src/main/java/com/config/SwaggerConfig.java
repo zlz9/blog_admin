@@ -9,6 +9,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+
 /**
  1. swagger配置类
  */
@@ -31,6 +32,32 @@ public class SwaggerConfig {
                 .contact(contact())
                 .build();
     }
+
+    /**
+     * 添加token
+     * @return
+     */
+//    private List<Parameter> jwtToken() {
+//
+//        String jwt = "Bearer {jwt}";
+//
+//        ParameterBuilder tokenPar = new ParameterBuilder();
+//        List<Parameter> pars = new ArrayList<>();
+//        // 声明 key
+//        tokenPar.name("Authorization")
+//                // 文字说明
+//                .description("jwt令牌")
+//                // 类型为字符串
+//                .modelRef(new ModelRef("string"))
+//                // 参数形式为 header 参数
+//                .parameterType("header")
+//                // 默认值
+//                .defaultValue(jwt)
+//                // 是否必须
+//                .required(false);
+//        pars.add(tokenPar.build());
+//        return pars;
+//    }
     private Contact contact(){
         return new Contact("周利贞", "暂无", "2334094446@qq.com");
     }

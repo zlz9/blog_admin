@@ -11,7 +11,7 @@
             <option name="classNameStrategy" value="camel" />
             <option name="encoding" value="UTF-8" />
             <option name="extraClassSuffix" value="" />
-            <option name="ignoreFieldPrefix" value="blog_user" />
+            <option name="ignoreFieldPrefix" value="blog_" />
             <option name="ignoreFieldSuffix" value="" />
             <option name="ignoreTablePrefix" value="blog_" />
             <option name="ignoreTableSuffix" value="" />
@@ -63,8 +63,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="User" />
-                  <option name="tableName" value="blog_user" />
+                  <option name="className" value="Comment" />
+                  <option name="tableName" value="blog_comment" />
                 </TableUIInfo>
               </list>
             </option>
