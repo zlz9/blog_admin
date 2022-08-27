@@ -31,9 +31,8 @@ public class ArticleController {
             @ApiImplicitParam(name = "page", value = "文章分页", required = true),
             @ApiImplicitParam(name = "pageSize", value = "每页数量", required = true)
     })
-
     @GetMapping("article")
-    public ResponseResult getArticle(@RequestBody PageParams pageParams){
+    public ResponseResult getArticle(PageParams pageParams){
         return articleService.getArticle(pageParams);
     }
 

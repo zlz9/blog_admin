@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.service.MenuService;
 import com.service.UserService;
 import com.utils.ResponseResult;
 import com.vo.params.UserParams;
@@ -25,6 +26,9 @@ public class UserInfoController {
      */
     @Autowired
     private UserService userService;
+    @Autowired
+    private MenuService menuService;
+
     @ApiOperation(value = "完善/更新用户信息",notes = "参数必填")
     @ApiImplicitParam(name = "userParams",value = "需要完善或者更新的信息")
     @PostMapping("user/fill/info")
@@ -34,9 +38,18 @@ public class UserInfoController {
     /**
      * 用户详情模块
      */
+    @ApiOperation(value = "获取用户详情")
     @GetMapping("/user/info")
     private ResponseResult getUserInfo(){
         return userService.getUserInfo();
     }
 //   TODO获取用户权限
+    /**
+     * 查询用户权限信息
+     */
+    @ApiOperation(value = "获取用户权限",tags = "获取当前用户权限")
+    @GetMapping("/user/perms")
+    private ResponseResult getUserPerms(){
+        return menuService.getUserPerms();
+    }
 }

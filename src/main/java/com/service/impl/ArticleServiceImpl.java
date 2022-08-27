@@ -108,7 +108,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
         if (isAuthor) {
             Long authorId = article.getAuthorId();
-            articleVo.setAuthor(userService.findAuthorById(authorId).getUserName());
+            articleVo.setNickName(userService.findAuthorById(authorId).getNickName());
         }
         return articleVo;
     }

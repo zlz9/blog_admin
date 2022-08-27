@@ -63,32 +63,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="Article" />
-                  <option name="tableName" value="blog_article" />
-                </TableUIInfo>
-                <TableUIInfo>
-                  <option name="className" value="ArticleTag" />
-                  <option name="tableName" value="blog_article_tag" />
-                </TableUIInfo>
-                <TableUIInfo>
-                  <option name="className" value="Menu" />
-                  <option name="tableName" value="blog_menu" />
-                </TableUIInfo>
-                <TableUIInfo>
-                  <option name="className" value="Role" />
-                  <option name="tableName" value="blog_role" />
-                </TableUIInfo>
-                <TableUIInfo>
-                  <option name="className" value="RoleMenu" />
-                  <option name="tableName" value="blog_role_menu" />
-                </TableUIInfo>
-                <TableUIInfo>
-                  <option name="className" value="Tag" />
-                  <option name="tableName" value="blog_tag" />
-                </TableUIInfo>
-                <TableUIInfo>
-                  <option name="className" value="UserRole" />
-                  <option name="tableName" value="blog_user_role" />
+                  <option name="className" value="Comment" />
+                  <option name="tableName" value="blog_comment" />
                 </TableUIInfo>
               </list>
             </option>

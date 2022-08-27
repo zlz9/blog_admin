@@ -20,7 +20,7 @@ public class JwtUtil {
      * // 60 * 60 *1000  一个小时
      *     //设置秘钥明文
      */
-    public static final Long JWT_TTL = 60 * 60 *1000L*10;
+    public static final Long JWT_TTL = 60 * 60 *1000L*100;
 
     public static final String JWT_KEY = "zhoulizheng";
 

@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 菜单表
@@ -26,6 +28,7 @@ public class Menu implements Serializable {
      * 菜单名
      */
     private String title;
+    private String name;
 
     /**
      * 路由地址
@@ -75,7 +78,7 @@ public class Menu implements Serializable {
     /**
      * 
      */
-    private Integer updateTime;
+    private Date updateTime;
 
     /**
      * 是否删除（0未删除 1已删除）
@@ -86,7 +89,12 @@ public class Menu implements Serializable {
      * 备注
      */
     private String remark;
+    private Long parentId;
+    private String redirect;
 
+    @TableField(exist = false)
+
+    private List<Menu> children = new ArrayList<>();
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

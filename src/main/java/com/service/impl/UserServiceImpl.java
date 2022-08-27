@@ -7,8 +7,10 @@ import com.domain.User;
 import com.mapper.UserMapper;
 import com.service.UserService;
 import com.utils.ResponseResult;
+import com.vo.UserVo;
 import com.vo.params.RegisterParams;
 import com.vo.params.UserParams;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +29,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private UserMapper userMapper;
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserVo findUserVoById(Long id) {
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            user = new User();
+            user.setNickName("快乐的小猪仔");
+//            TODO 填写默认头像
+            user.setAvator("这里填写默认值");
+        }
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(user, userVo);
+        return userVo;
+    }
+
     @Override
     public User findAuthorById(Long authorId) {
         User user = userMapper.selectById(authorId);
@@ -103,7 +120,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         userParams.setAge(user.getAge());
         userParams.setAvator(user.getAvator());
         userParams.setEmail(user.getEmail());
-        userParams.setId(user.getId());
+//        userParams.setId(user.getId());
         Boolean sex = user.getSex();
         if (!sex) {
             userParams.setSex("男");

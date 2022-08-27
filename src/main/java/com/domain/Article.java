@@ -34,7 +34,7 @@ public class Article implements Serializable {
     /**
      * 发布时间
      */
-    private Integer createTime;
+    private Long createTime;
 
     /**
      * 是否删除(0，正常；1删除)
@@ -64,6 +64,8 @@ public class Article implements Serializable {
      * 文章标题
      */
   private String title;
+  
+  private String summary;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -3,6 +3,7 @@ package com.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.domain.LoginUser;
 import com.domain.User;
+import com.mapper.MenuMapper;
 import com.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ import java.util.Objects;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
-
+    @Autowired
+    private MenuMapper menuMapper;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 //        根据用户名查询用户信息
@@ -44,7 +46,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 //TODO 根据用户查询权限信息 添加到LoginUser中
         //封装成UserDetails对象返回
+//        List<String> permissionKeyList= menuMapper.selectPermsByUserId(user.getId());
+//        测试写法
         List<String> list = new ArrayList<>(Arrays.asList("test"));
-        return new LoginUser(user, list);
+        return new LoginUser(user,list );
     }
 }

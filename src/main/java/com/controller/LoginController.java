@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,10 +40,9 @@ public class LoginController {
             @ApiImplicitParam(name = "password", value = "密码", required = true, paramType = "form")
     })
     @PostMapping("/user/login")
-    public ResponseResult login(@RequestBody User user) {
+    public ResponseResult login( User user) {
         return loginService.login(user);
     }
-
     /**
      * 注销模块
      * @return

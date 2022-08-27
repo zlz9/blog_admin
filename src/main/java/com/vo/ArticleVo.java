@@ -30,25 +30,12 @@ public class ArticleVo {
      * 文章html
      */
     private String bodyHtml;
-
-    /**
-     * 文章md
-     */
-    private String bodyMd;
-
-    /**
-     * 文章阅读数
-     */
-    private Integer viewCount;
-
-    /**
-     * 权重
-     */
     private Integer weight;
     private Date createTime;
-    private String author;
+    private String nickName;
+    private String summary;
     /**
      * 文章标题
      */
-//   TODO 暂时不做评论系统
+
 }

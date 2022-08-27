@@ -28,4 +28,18 @@
         create_time,update_by,update_time,
         del_flag,remark
     </sql>
+    <select id="selectPermsByUserId" resultType="java.lang.String">
+        select distinct perms
+        from blog_menu bm
+                 left join blog_role_menu brm on brm.menu_id = bm.id
+                 left join blog_role br on br.id = brm.role_id
+                 left join blog_user_role bur on bur.role_id = br.id
+                 left join blog_user bu on bu.id = bur.user_id
+        where bu.id = #{id}
+    </select>
+    <select id="selectMenuListById" resultType="com.domain.Menu">
+        select id,title,name,path,icon,component,redirect,parentId from blog_menu where id
+        in (select menu_id from blog_role_menu where role_id
+        in (select role_id from blog_user_role where user_id=#{id}))
+    </select>
 </mapper>
