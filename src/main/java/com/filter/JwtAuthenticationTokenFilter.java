@@ -36,6 +36,13 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        /**
+         *TODO  将请求头的token和redis的token做比较
+         *  如果有相同放行，不同抛出错误
+         */
+
+
+
         //解析token
         String userid;
         try {
@@ -52,7 +59,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             throw new RuntimeException("用户未登录");
         }
         //存入SecurityContextHolder
-        //TODO 获取权限信息封装到Authentication中
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginUser,null,loginUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

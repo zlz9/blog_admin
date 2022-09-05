@@ -1,5 +1,6 @@
-package com.vo;
+package com.vo.params;
 
+import com.vo.TagVo;
 import lombok.Data;
 
 import java.util.Date;
@@ -7,15 +8,13 @@ import java.util.List;
 
 /**
  * <h4>blog_admin</h4>
- * <p>文章参数</p>
+ * <p>发布文章参数</p>
  *
  * @author : zlz
- * @date : 2022-08-16 08:52
+ * @date : 2022-08-31 09:53
  **/
 @Data
-public class ArticleVo {
-    private Long id;
-
+public class PublishArticleParams {
     /**
      * 文章标题
      */
@@ -30,13 +29,24 @@ public class ArticleVo {
      * 文章html
      */
     private String bodyHtml;
-    private Integer weight;
-    private Date createTime;
-    private String nickName;
-    private String summary;
-    private Integer viewCount;
     /**
-     * 文章标题
+     * 文章md
      */
-
+    private String bodyMd;
+    /**
+     * 文章权重
+     */
+    private Integer weight;
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+    /**
+     * 文章摘要
+     */
+    private String summary;
+    /**
+     * 文章标签id
+     */
+    private Long tagId;
 }

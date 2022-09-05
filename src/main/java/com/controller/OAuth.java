@@ -19,14 +19,14 @@ import java.io.IOException;
  * @author : zlz
  * @date : 2022-08-26 21:25
  **/
-@RequestMapping
+@RequestMapping("api")
 @RestController
 public class OAuth {
     @Autowired
     private RedisCache redisCache;
     @GetMapping( "/captcha")
     public void getCaptcha(HttpServletResponse response) throws IOException {
-        LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(116, 36, 4, 10);
+        LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(116, 30, 4, 10);
         String code = lineCaptcha.getCode();
         redisCache.setCacheObject("captcha", code);
         try {

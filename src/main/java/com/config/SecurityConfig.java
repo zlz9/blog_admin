@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/webjars/**",
             "/v2/**",
             "/swagger-ui.html",
-            "/captcha"
+            "/api/captcha",
     };
 
     @Override

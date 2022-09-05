@@ -3,6 +3,7 @@ package com.controller;
 import com.service.ArticleService;
 import com.utils.ResponseResult;
 import com.vo.params.PageParams;
+import com.vo.params.PublishArticleParams;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -24,7 +25,7 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
     /**
-     * 根据当前用户id分页查询文章
+     * 分页查询所有文章
      */
     @ApiOperation(value = "获取文章",notes = "文章分页，必填")
     @ApiImplicitParams({
@@ -36,10 +37,35 @@ public class ArticleController {
         return articleService.getArticle(pageParams);
     }
 
+    /***
+     *根据id删除文章
+     * @param id
+     * @return
+     */
     @ApiOperation(value = "删除文章",notes = "删除文章，传入文章id")
     @ApiImplicitParam(name = "id" ,value = "文章id",required = true)
     @PostMapping("delelet/article/id={id}")
     public ResponseResult delArticleById(@PathVariable Integer id){
         return articleService.delArticleById(id);
+    }
+
+    /**
+     * 根据当前用户id分页查询文章
+     */
+    @GetMapping("article/author")
+    private ResponseResult getArticleByAuthorId(){
+        return articleService.getArticleByAuthorId();
+    }
+
+    /**
+     * 发布文章
+     */
+    @PostMapping("/publish")
+    private ResponseResult publishArticle(@RequestBody PublishArticleParams publishArticleParams){
+        return articleService.publishArticle(publishArticleParams);
+    }
+    @GetMapping ("/article/{id}")
+    private ResponseResult articleInfo(@PathVariable Long id){
+        return articleService.articleInfo(id);
     }
 }

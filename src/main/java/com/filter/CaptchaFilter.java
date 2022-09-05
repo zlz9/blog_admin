@@ -35,7 +35,7 @@ public class CaptchaFilter extends OncePerRequestFilter {
             try {
                 validate(request);
             } catch (CaptchaException e) {
-                loginFailureHandler.onAuthenticationFailure(request, response,null);
+                 loginFailureHandler.onAuthenticationFailure(request, response, null);
             }
 
         }

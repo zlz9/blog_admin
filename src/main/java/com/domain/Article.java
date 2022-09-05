@@ -67,6 +67,10 @@ public class Article implements Serializable {
   
   private String summary;
 
+    /**
+     * 文章标签id
+     */
+     private Long tagId;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

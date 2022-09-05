@@ -4,24 +4,32 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.Article;
+import com.domain.ArticleTag;
 import com.domain.LoginUser;
 import com.mapper.ArticleMapper;
+import com.mapper.ArticleTagMapper;
 import com.service.ArticleService;
 import com.service.TagService;
 import com.service.UserService;
 import com.utils.ResponseResult;
+import com.vo.ArticleInfoVo;
 import com.vo.ArticleVo;
+import com.vo.TagVo;
+import com.vo.UserVo;
 import com.vo.params.PageParams;
+import com.vo.params.PublishArticleParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author 23340
@@ -38,6 +46,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     private TagService tagService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ArticleTagMapper articleTagMapper;
 
     @Override
     public ResponseResult getArticle(PageParams pageParams) {
@@ -54,14 +64,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         long total = articlePage.getTotal();
         List<ArticleVo> articleVoList = copyList(records, true, true);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("data",articleVoList);
-        map.put("total",total);
-        log.info("返回的文章信息：{}",map);
+        map.put("data", articleVoList);
+        map.put("total", total);
+        log.info("返回的文章信息：{}", map);
         return new ResponseResult(200, map);
     }
 
     /**
      * 文章删除模块
+     *
      * @param id
      * @return
      */
@@ -80,15 +91,105 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         Long userid = loginUser.getUser().getId();
-;
+        ;
 //        文章作者id
         Long authorId = article.getAuthorId();
-        if (userid!=authorId){
-           return new ResponseResult(501, "无删除权限");
+        if (userid != authorId) {
+            return new ResponseResult(501, "无删除权限");
         }
         article.setDelFlag(1);
         articleMapper.updateById(article);
         return new ResponseResult(200, "删除成功");
+    }
+
+    /**
+     * 根据当前作者id查询文章
+     *
+     * @return
+     */
+    @Override
+    public ResponseResult getArticleByAuthorId() {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = loginUser.getUser().getId();
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getAuthorId, id);
+        List<Article> articles = articleMapper.selectList(queryWrapper);
+        if (Objects.isNull(articles)) {
+            return new ResponseResult<>(404, "未找到文章");
+        }
+        return new ResponseResult(200, articles);
+    }
+
+    @Override
+    public ResponseResult publishArticle(PublishArticleParams publishArticleParams) {
+        if (ObjectUtils.isEmpty(publishArticleParams)) {
+            return new ResponseResult<>(400, "参数错误");
+        }
+
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = loginUser.getUser().getId();
+        Article article = new Article();
+        article.setAuthorId(id);
+        article.setCreateTime(System.currentTimeMillis());
+        article.setBodyHtml(publishArticleParams.getBodyHtml());
+        article.setBodyMd(publishArticleParams.getBodyMd());
+        article.setSummary(publishArticleParams.getSummary());
+        article.setTitle(publishArticleParams.getTitle());
+        article.setWeight(publishArticleParams.getWeight());
+        this.articleMapper.insert(article);
+        /**
+         *文章tags
+         * 传过来的是tagId
+         */
+        List<TagVo> tags = publishArticleParams.getTags();
+        ArticleTag articleTag = new ArticleTag();
+        if (tags != null) {
+            for (TagVo tag : tags) {
+                Long articleId = article.getId();
+                Long tagId = tag.getTagId();
+                articleTag.setTagId(tagId);
+                articleTag.setArticleId(articleId);
+                articleTagMapper.insert(articleTag);
+            }
+        }
+
+
+        return new ResponseResult<>(200, "发布成功");
+    }
+
+    /**
+     * 根据文章和id查询文章详情
+     * @param id
+     * @return
+     *
+     * public class ArticleInfoVo {
+     *     private Long id;
+     *     private UserVo userVo;
+     *     private String mdBody;
+     *     private Long createTime;
+     *     private CommentVo commentVo;
+     * }
+     */
+    @Override
+    public ResponseResult articleInfo(Long id) {
+        ArticleInfoVo articleInfoVo = new ArticleInfoVo();
+        Article article = articleMapper.selectById(id);
+        if (article == null) {
+            return new ResponseResult<>(400,"文章不存在");
+        }
+        //作者信息
+        Long authorId = article.getAuthorId();
+        UserVo author = userService.findUserVoById(authorId);
+        articleInfoVo.setUserVo(author);
+       //文章主体
+        articleInfoVo.setId(id);
+        String bodyMd = article.getBodyHtml();
+        articleInfoVo.setMdBody(bodyMd);
+       //创建时间
+        Long createTime = article.getCreateTime();
+        articleInfoVo.setCreateTime(createTime);
+       //TODO 暂时不做文章评论
+        return new ResponseResult<>(200, articleInfoVo);
     }
 
     private List<ArticleVo> copyList(List<Article> records, boolean isTag, boolean isAuthor) {
