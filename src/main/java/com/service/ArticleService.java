@@ -3,6 +3,7 @@ package com.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.domain.Article;
 import com.utils.ResponseResult;
+import com.vo.ArticleInfoVo;
 import com.vo.params.PageParams;
 import com.vo.params.PublishArticleParams;
 
@@ -17,9 +18,14 @@ public interface ArticleService extends IService<Article> {
 
     ResponseResult delArticleById(Integer id);
 
-    ResponseResult getArticleByAuthorId();
+    ResponseResult getArticleByAuthorId(PageParams pageParams);
 
     ResponseResult publishArticle(PublishArticleParams publishArticleParams);
 
     ResponseResult articleInfo(Long id);
+
+    ResponseResult recommendArticle();
+
+    ResponseResult updateArticle(ArticleInfoVo articleInfoVo);
+
 }

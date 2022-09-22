@@ -20,4 +20,9 @@
         WHERE
             tag_id IN ( SELECT tag_id FROM blog_article_tag WHERE article_id = #{articleId} )
     </select>
+    <select id="selectArticleBytagId" resultType="com.vo.ArticleVo">
+        select
+            id,comment_id,author_id,create_time,summary,body_html,body_md,view_count,weight,title
+        from blog_article where id in (select article_id from blog_article_tag where tag_id = #{id}) order by create_time desc
+    </select>
 </mapper>

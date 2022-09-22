@@ -22,5 +22,10 @@ public class MenuVo implements Serializable {
     private String component;
     private String icon;
     private String redirect;
+    /**
+     * 是否展示
+     */
+    private String isShow;
+
     private List<MenuVo> children = new ArrayList<>();
 }

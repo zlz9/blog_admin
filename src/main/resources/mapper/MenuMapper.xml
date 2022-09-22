@@ -38,7 +38,7 @@
         where bu.id = #{id}
     </select>
     <select id="selectMenuListById" resultType="com.domain.Menu">
-        select id,title,name,path,icon,component,redirect,parentId from blog_menu where id
+        select id,title,name,path,icon,component,redirect,parentId,is_show from blog_menu where id
         in (select menu_id from blog_role_menu where role_id
         in (select role_id from blog_user_role where user_id=#{id}))
     </select>

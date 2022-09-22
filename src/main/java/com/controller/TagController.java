@@ -2,6 +2,7 @@ package com.controller;
 
 import com.service.TagService;
 import com.utils.ResponseResult;
+import com.vo.params.TagPageParams;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -43,4 +44,11 @@ public class TagController {
         return tagService.getTagList();
     }
 
+    /**
+     * params 文章id
+     * @return
+     */
+    @ApiOperation(value = "根据标签获取文章",notes = "根据所选标签获取文章")
+    @GetMapping("tag/articles")
+    public ResponseResult getArticleByTag( TagPageParams tagPageParams){return tagService.getArticleByTag(tagPageParams);}
 }

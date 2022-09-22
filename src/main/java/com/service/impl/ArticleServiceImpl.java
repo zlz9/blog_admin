@@ -9,6 +9,7 @@ import com.domain.LoginUser;
 import com.mapper.ArticleMapper;
 import com.mapper.ArticleTagMapper;
 import com.service.ArticleService;
+import com.service.CommentService;
 import com.service.TagService;
 import com.service.UserService;
 import com.utils.ResponseResult;
@@ -19,11 +20,13 @@ import com.vo.UserVo;
 import com.vo.params.PageParams;
 import com.vo.params.PublishArticleParams;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
+@Transactional
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         implements ArticleService {
     @Autowired
@@ -48,7 +52,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     private UserService userService;
     @Autowired
     private ArticleTagMapper articleTagMapper;
+    @Autowired
+    private CommentService commentService;
 
+    /**
+     * 分页查询全部文章
+     * @param pageParams
+     * @return
+     */
     @Override
     public ResponseResult getArticle(PageParams pageParams) {
         /**
@@ -58,7 +69,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(Article::getWeight, Article::getCreateTime);
 //        判断是否删除
-        queryWrapper.eq(Article::getDelFlag, "0");
+//        queryWrapper.eq(Article::getDelFlag, "0");
         Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
         List<Article> records = articlePage.getRecords();
         long total = articlePage.getTotal();
@@ -97,8 +108,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         if (userid != authorId) {
             return new ResponseResult(501, "无删除权限");
         }
-        article.setDelFlag(1);
-        articleMapper.updateById(article);
+//        TODO 删除文章的同时删除评论和标签
+
+
+        /**
+         * 逻辑删除
+         */
+//        article.setDelFlag(1);
+//        articleMapper.updateById(article);
+        /**
+         * 物理删除
+         */
+        articleMapper.deleteById(id);
         return new ResponseResult(200, "删除成功");
     }
 
@@ -108,18 +129,32 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return
      */
     @Override
-    public ResponseResult getArticleByAuthorId() {
+    public ResponseResult getArticleByAuthorId(PageParams pageParams) {
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long id = loginUser.getUser().getId();
+        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+//        查询条件
         queryWrapper.eq(Article::getAuthorId, id);
-        List<Article> articles = articleMapper.selectList(queryWrapper);
-        if (Objects.isNull(articles)) {
+        queryWrapper.orderByDesc(Article::getCreateTime);
+        queryWrapper.like(StringUtils.isNotBlank(pageParams.getQuery()), Article::getTitle, pageParams.getQuery());
+        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
+        List<Article> records = articlePage.getRecords();
+        long total = articlePage.getTotal();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("articleList", records);
+        map.put("total", total);
+        if (Objects.isNull(articlePage)) {
             return new ResponseResult<>(404, "未找到文章");
         }
-        return new ResponseResult(200, articles);
+        return new ResponseResult(200, map);
     }
 
+    /**
+     * 发布文章
+     * @param publishArticleParams
+     * @return
+     */
     @Override
     public ResponseResult publishArticle(PublishArticleParams publishArticleParams) {
         if (ObjectUtils.isEmpty(publishArticleParams)) {
@@ -153,8 +188,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             }
         }
 
-
-        return new ResponseResult<>(200, "发布成功");
+        HashMap<String, Long> map = new HashMap<>();
+        map.put("id", article.getId());
+        return new ResponseResult<>(200, "发布成功",map);
     }
 
     /**
@@ -183,13 +219,65 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         articleInfoVo.setUserVo(author);
        //文章主体
         articleInfoVo.setId(id);
-        String bodyMd = article.getBodyHtml();
-        articleInfoVo.setMdBody(bodyMd);
+        articleInfoVo.setHtmlBody(article.getBodyHtml());
+        articleInfoVo.setMdBody(article.getBodyMd());
+        articleInfoVo.setSummary(article.getSummary());
+        articleInfoVo.setTitle(article.getTitle());
        //创建时间
         Long createTime = article.getCreateTime();
         articleInfoVo.setCreateTime(createTime);
-       //TODO 暂时不做文章评论
         return new ResponseResult<>(200, articleInfoVo);
+    }
+
+    /**
+     * 文章推送
+     * @return
+     */
+//    TODO 目前先默认推送推送
+    @Override
+    public ResponseResult recommendArticle() {
+        LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(Article::getCreateTime).last("limit 10");
+        List<Article> articleList = articleMapper.selectList(wrapper);
+        if (articleList == null) {
+            return new ResponseResult(404, "为找到文章");
+        }
+        return new ResponseResult<>(200,articleList);
+    }
+
+    /**
+     * 修改文章
+     *根据文章id查询文章信息(summary,title,body_html,body_md tags)
+     * @param
+     * @return
+     */
+    @Override
+    public ResponseResult updateArticle(ArticleInfoVo articleInfoVo) {
+        Article article = new Article();
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        article.setId(articleInfoVo.getId());
+        article.setTitle(articleInfoVo.getTitle());
+        article.setSummary(articleInfoVo.getSummary());
+        article.setBodyHtml(articleInfoVo.getHtmlBody());
+        article.setBodyMd(articleInfoVo.getMdBody());
+        article.setCreateTime(System.currentTimeMillis());
+        /**
+         * 更新tags
+         * 先删除 后插入
+         */
+        ArticleTag articleTag = new ArticleTag();
+        List<TagVo> tags = articleInfoVo.getTags();
+        articleTagMapper.deleteById(articleInfoVo.getId());
+//        插入
+        if (tags != null) {
+            for (TagVo tag : tags) {
+                articleTag.setArticleId(articleInfoVo.getId());
+                articleTag.setTagId(tag.getTagId());
+                articleTagMapper.insert(articleTag);
+            }
+        }
+        articleMapper.updateById(article);
+        return new ResponseResult<>(200,"成功");
     }
 
     private List<ArticleVo> copyList(List<Article> records, boolean isTag, boolean isAuthor) {
@@ -208,8 +296,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             articleVo.setTags(tagService.findTagsByArticleId(articleId));
         }
         if (isAuthor) {
+            /**
+             * 作者信息
+             */
             Long authorId = article.getAuthorId();
             articleVo.setNickName(userService.findAuthorById(authorId).getNickName());
+            articleVo.setAvator(userService.findAuthorById(authorId).getAvator());
         }
         return articleVo;
     }

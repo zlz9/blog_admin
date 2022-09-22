@@ -2,7 +2,6 @@ package com.vo;
 
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,8 +30,9 @@ public class ArticleVo {
      */
     private String bodyHtml;
     private Integer weight;
-    private Date createTime;
+    private Long createTime;
     private String nickName;
+    private String avator;
     private String summary;
     private Integer viewCount;
     /**

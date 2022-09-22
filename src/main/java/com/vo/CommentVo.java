@@ -2,7 +2,6 @@ package com.vo;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,13 +14,17 @@ import java.util.List;
 @Data
 public class CommentVo {
     /**
+     * id
+     */
+    private Long id;
+    /**
      * 用户信息
      */
-    private UserVo userVo;
+    private UserVo author;
     /**
      * 评论
      */
-    private String comment;
+    private String content;
     /**
      * 评论文章id
      */
@@ -33,7 +36,7 @@ public class CommentVo {
     /**
      * 回复给谁
      */
-    private Long toUid;
+    private UserVo toUser ;
 
     /**
      * 评论层级
@@ -42,6 +45,7 @@ public class CommentVo {
     /**
      * 创建时间
      */
-    private Long createTime;
-    private List<CommentVo> children = new ArrayList<>();
+    private Long createDate;
+    private List<CommentVo> childrens;
+//    private List<CommentVo> children = new ArrayList<>();
 }

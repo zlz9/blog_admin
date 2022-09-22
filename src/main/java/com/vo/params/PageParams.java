@@ -18,4 +18,6 @@ public class PageParams {
     private  int page=1;
     @ApiModelProperty(name = "pageSize",value = "每页数量",required = true,example = "10")
     private  int pageSize=20;
+    @ApiModelProperty(name = "query",value = "模糊查询")
+    private String query;
 }

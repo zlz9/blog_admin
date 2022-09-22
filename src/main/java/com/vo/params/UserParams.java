@@ -14,18 +14,20 @@ import lombok.Data;
 @Data
 @ApiModel(description = "实体类", value = "更新用户信息参数")
 public class UserParams {
-
-//    private Long id;
-@ApiModelProperty(name = "nickName",value = "昵称",example = "小明",required = true)
+    @ApiModelProperty(name = "id", value = "用户id", required = true)
+    private Long id;
+    @ApiModelProperty(name = "nickName", value = "昵称", example = "小明", required = true)
     private String nickName;
-    @ApiModelProperty(name = "sex",value = "性别",example = "男",required = true)
+    @ApiModelProperty(name = "sex", value = "性别", example = "男", required = true)
     private String sex;
-    @ApiModelProperty(name = "email",value = "email",example = "邮箱",required = true)
+    @ApiModelProperty(name = "email", value = "email", example = "邮箱", required = true)
     private String email;
-    @ApiModelProperty(name = "age",value = "年龄",example = "20",required = true)
+    @ApiModelProperty(name = "age", value = "年龄", example = "20", required = true)
     private Integer age;
-    @ApiModelProperty(name = "avator",value = "头像",example = "http:xxxx.xxx.xxx",required = true)
+    @ApiModelProperty(name = "avator", value = "头像", example = "http:xxxx.xxx.xxx", required = true)
     private String avator;
-    @ApiModelProperty(name = "phoneNumber",value = "手机号",example = "1838888813",required = true)
+    @ApiModelProperty(name = "phoneNumber", value = "手机号", example = "1838888813", required = true)
     private Integer phoneNumber;
+    @ApiModelProperty(name = "motto", value = "座右铭", example = "今天是美好的一天", required = true)
+    private String motto;
 }

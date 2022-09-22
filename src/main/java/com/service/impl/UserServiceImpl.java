@@ -16,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
 * @author 23340
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 * @createDate 2022-08-13 11:02:25
 */
 @Service
+@Transactional
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
     @Autowired
@@ -117,9 +119,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         Long id = loginUser.getUser().getId();
         User user = userMapper.selectById(id);
         UserParams userParams = new UserParams();
+        userParams.setId(id);
         userParams.setAge(user.getAge());
         userParams.setAvator(user.getAvator());
         userParams.setEmail(user.getEmail());
+        userParams.setMotto(user.getMotto());
 //        userParams.setId(user.getId());
         Boolean sex = user.getSex();
         if (!sex) {

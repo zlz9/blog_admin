@@ -53,6 +53,12 @@ public class LoginController {
         return loginService.logout();
     }
 
+    /**
+     * 注册模块
+     * @param registerParams
+     * @return
+     */
+    @ApiOperation(value = "用户注册")
     public ResponseResult register(RegisterParams registerParams){
         return userService.register(registerParams);
     }

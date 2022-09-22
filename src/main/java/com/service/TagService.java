@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.domain.Tag;
 import com.utils.ResponseResult;
 import com.vo.TagVo;
+import com.vo.params.TagPageParams;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface TagService extends IService<Tag> {
     ResponseResult addTag(String tagName);
 
     ResponseResult getTagList();
+
+    ResponseResult getArticleByTag(TagPageParams tagPageParams);
 }

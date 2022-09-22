@@ -2,6 +2,8 @@ package com.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * <h4>blog_admin</h4>
  * <p>文章详情vo</p>
@@ -12,8 +14,12 @@ import lombok.Data;
 @Data
 public class ArticleInfoVo {
     private Long id;
+    private String title;
+    private String summary;
     private UserVo userVo;
+    private List<TagVo> tags;
     private String mdBody;
+    private String htmlBody;
     private Long createTime;
     private CommentVo commentVo;
 }

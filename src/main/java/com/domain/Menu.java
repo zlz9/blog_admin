@@ -91,6 +91,10 @@ public class Menu implements Serializable {
     private String remark;
     private Long parentId;
     private String redirect;
+    /**
+     * 是否展示
+     */
+    private String isShow;
 
     @TableField(exist = false)
 

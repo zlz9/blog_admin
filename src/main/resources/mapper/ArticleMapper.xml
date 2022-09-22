@@ -21,4 +21,7 @@
         create_time,del_flag,body_html,
         body_md,view_count,weight
     </sql>
+    <select id="findArticleInfo" resultType="com.domain.Article">
+        select summary ,title,body_html,body_md from blog_article where  id = #{id}
+    </select>
 </mapper>

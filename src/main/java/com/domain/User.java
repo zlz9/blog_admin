@@ -75,6 +75,10 @@ public class User implements Serializable {
      * 删除（0正常，1删除）
      */
     private Boolean delFlag;
+    /**
+     * 座右铭
+     */
+    private String motto;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

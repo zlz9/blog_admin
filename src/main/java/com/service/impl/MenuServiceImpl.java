@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
 */
 @Slf4j
 @Service
+@Transactional
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
     implements MenuService{
     @Autowired
@@ -71,6 +73,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
         menuTree.forEach(m -> {
             MenuVo menuVo = new MenuVo();
             menuVo.setId(m.getId());
+            menuVo.setIsShow(m.getIsShow());
             menuVo.setName(m.getName());
             menuVo.setComponent(m.getComponent());
             menuVo.setIcon(m.getIcon());
@@ -80,6 +83,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
             if (m.getChildren().size()>0){
 //                子节点
                 menuVo.setChildren(convert(m.getChildren()));
+            }else{
+                menuVo.setChildren(null);
             }
             menuVoList.add(menuVo);
         });

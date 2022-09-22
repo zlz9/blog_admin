@@ -1,14 +1,18 @@
 package com.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.Tag;
 import com.mapper.TagMapper;
 import com.service.TagService;
 import com.utils.ResponseResult;
+import com.vo.ArticleVo;
 import com.vo.TagVo;
+import com.vo.params.TagPageParams;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,7 @@ import java.util.List;
  * @createDate 2022-08-17 08:24:01
  */
 @Service
+@Transactional
 public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
         implements TagService {
     @Autowired
@@ -53,6 +58,23 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
             return new ResponseResult<>(400,"标签不存在");
         }
         return new ResponseResult(200, tags);
+    }
+
+    /**
+     * 根据tagId查找文章
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult getArticleByTag(TagPageParams tagPageParams) {
+        List<ArticleVo> articleList =tagMapper.selectArticleBytagId(tagPageParams.getId());
+        Page<ArticleVo> articlePage = new Page<>(tagPageParams.getPage(),tagPageParams.getPageSize());
+        List<ArticleVo> records = articlePage.getRecords();
+        long total = articlePage.getTotal();
+        if (articleList == null) {
+            return new ResponseResult<>(400,"文章不存在");
+        }
+        return new ResponseResult<>(200, articleList);
     }
 
     /**

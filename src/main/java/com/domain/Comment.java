@@ -11,7 +11,6 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 
  * @TableName blog_comment
  */
 @TableName(value ="blog_comment")
@@ -38,7 +37,7 @@ public class Comment implements Serializable {
     /**
      * 评论信息
      */
-    private String comment;
+    private String content;
 
     /**
      * 上级评论id
@@ -58,7 +57,7 @@ public class Comment implements Serializable {
     /**
      * 创建时间
      */
-    private Long createTime;
+    private Long createDate;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
