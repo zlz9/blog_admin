@@ -35,8 +35,5 @@ public class ArticleVo {
     private String avator;
     private String summary;
     private Integer viewCount;
-    /**
-     * 文章标题
-     */
-
+    private Integer likeCount;
 }

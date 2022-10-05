@@ -1,15 +1,22 @@
 package com.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.LoginUser;
 import com.domain.User;
+import com.domain.UserRole;
+import com.lang.Const;
 import com.mapper.UserMapper;
+import com.mapper.UserRoleMapper;
 import com.service.UserService;
+import com.utils.RedisCache;
 import com.utils.ResponseResult;
+import com.utils.UserNameUtils;
 import com.vo.UserVo;
 import com.vo.params.RegisterParams;
 import com.vo.params.UserParams;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 /**
 * @author 23340
 * @description 针对表【blog_user】的数据库操作Service实现
@@ -30,7 +36,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RedisCache redisCache;
+    @Autowired
+    private UserRoleMapper userRoleMapper;
 
     @Override
     public UserVo findUserVoById(Long id) {
@@ -56,19 +66,57 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return user;
     }
 
+    /**
+     * 用户注册模块
+     * 1.比对验证码
+     * 2.获取redis中的验证码
+     * 3.验证码比对成功，注册
+     * 4.注册用户并且绑定角色
+     * @param registerParams
+     * @return
+     */
     @Override
     public ResponseResult register(RegisterParams registerParams) {
         User user = new User();
+        if (registerParams.getCode()==null) {
+            return new ResponseResult<>(444,"请输入验证码");
+        }
+        String ParamsCode = registerParams.getCode();
+        String code = redisCache.getCacheObject("code");
+        if (!ParamsCode.equals(code)) {
+         return new ResponseResult<>(443,"验证码错误！请重新获取验证码");
+        }else if (StringUtils.isBlank(code)) {
+            return new ResponseResult<>(446,"验证码过期");
+        }
+//        比对qq邮箱查看是否已经注册
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getEmail, registerParams.getEmail());
+        User hasRegister = userMapper.selectOne(wrapper);
+        if (hasRegister != null) {
+            return new ResponseResult<>(445,"该用户已经注册");
+        }
+//      默认头像
+        user.setAvator(Const.REGISTER_AVATAR);
+//        默认密码
+        String encodePassword = passwordEncoder.encode(registerParams.getPassword());
+//        设置用户名
         user.setUserName(registerParams.getUserName());
-        String password = registerParams.getPassword();
-        String encodePassword = passwordEncoder.encode(password);
         user.setPassword(encodePassword);
+        user.setEmail(registerParams.getEmail());
+        user.setNickName(UserNameUtils.getRandomJianHan(4));
+//        绑定角色
         userMapper.insert(user);
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(Const.REGISTER_ID);
+        userRoleMapper.insert(userRole);
+//        注册成功后删除redis中的code
+        redisCache.deleteObject("code");
         return new ResponseResult(200, "注册成功");
     }
 
     /**
-     * 填写用户信息模块
+     * 更新用户信息模块
      * @param userParams
      * @return
      */
@@ -86,12 +134,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         Long userid = loginUser.getUser().getId();
         User user = userMapper.selectById(userid);
-        user.setAge(userParams.getAge());
         user.setAvator(userParams.getAvator());
+        user.setUserName(userParams.getUserName());
         user.setNickName(userParams.getNickName());
         user.setCreateTime(System.currentTimeMillis());
-        user.setPhoneNumber(userParams.getPhoneNumber());
+        user.setPhoneNumber(userParams.getPhone());
         user.setEmail(userParams.getEmail());
+        user.setMotto(userParams.getMotto());
         String sex = userParams.getSex();
         if (sex=="女") {
             user.setSex(true);
@@ -119,11 +168,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         Long id = loginUser.getUser().getId();
         User user = userMapper.selectById(id);
         UserParams userParams = new UserParams();
-        userParams.setId(id);
         userParams.setAge(user.getAge());
         userParams.setAvator(user.getAvator());
         userParams.setEmail(user.getEmail());
         userParams.setMotto(user.getMotto());
+        userParams.setBirthday(user.getBirthday());
 //        userParams.setId(user.getId());
         Boolean sex = user.getSex();
         if (!sex) {
@@ -132,9 +181,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         else {
             userParams.setSex("女");
         }
-
         userParams.setNickName(user.getNickName());
-        userParams.setPhoneNumber(user.getPhoneNumber());
+        userParams.setPhone(user.getPhoneNumber());
         if (user == null) {
             return new ResponseResult<>(400, "用户不存在");
         }

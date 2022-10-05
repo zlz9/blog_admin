@@ -21,5 +21,7 @@ public class ArticleInfoVo {
     private String mdBody;
     private String htmlBody;
     private Long createTime;
+    private Integer likeCount;
+    private Integer view_count;
     private CommentVo commentVo;
 }

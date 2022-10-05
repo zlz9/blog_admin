@@ -50,7 +50,6 @@ public class CaptchaFilter extends OncePerRequestFilter {
         }
         String  captcha = redisCache.getCacheObject("captcha");
         if (!code.equals(captcha)) {
-
             throw new CaptchaException("验证码错误");
         }
 

@@ -4,6 +4,7 @@ import com.domain.LoginUser;
 import com.utils.JwtUtil;
 import com.utils.RedisCache;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,11 +23,11 @@ import java.util.Objects;
  * @author 23340
  */
 @Component
+@Slf4j
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private RedisCache redisCache;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //获取token
@@ -40,9 +41,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
          *TODO  将请求头的token和redis的token做比较
          *  如果有相同放行，不同抛出错误
          */
-
-
-
         //解析token
         String userid;
         try {

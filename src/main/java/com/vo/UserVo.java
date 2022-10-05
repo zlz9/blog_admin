@@ -18,4 +18,5 @@ public class UserVo {
     private String  nickName;
     private String avator;
     private String motto;
+    private Long birthday;
 }

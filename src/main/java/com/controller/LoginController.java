@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,8 +60,8 @@ public class LoginController {
      * @return
      */
     @ApiOperation(value = "用户注册")
-    public ResponseResult register(RegisterParams registerParams){
+    @PostMapping("/user/register")
+    public ResponseResult register(@RequestBody RegisterParams registerParams){
         return userService.register(registerParams);
     }
 }
-

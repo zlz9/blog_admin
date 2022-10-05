@@ -40,7 +40,6 @@
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:2.7.2" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-tx:5.3.22" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-oxm:5.3.22" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-context-support:5.3.22" level="project" />
     <orderEntry type="library" name="Maven: io.lettuce:lettuce-core:6.1.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.79.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.79.Final" level="project" />
@@ -146,5 +145,9 @@
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.17.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.qiniu:happy-dns-java:0.1.6" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-mail:2.7.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context-support:5.3.22" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.mail:jakarta.mail:1.6.7" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.activation:jakarta.activation:1.2.2" level="project" />
   </component>
 </module>

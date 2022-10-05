@@ -44,6 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/v2/**",
             "/swagger-ui.html",
             "/api/captcha",
+            "/api/sendEmail/**",
+            "/api/user/register/**"
+
     };
 
     @Override

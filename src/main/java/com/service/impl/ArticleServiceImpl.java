@@ -8,10 +8,7 @@ import com.domain.ArticleTag;
 import com.domain.LoginUser;
 import com.mapper.ArticleMapper;
 import com.mapper.ArticleTagMapper;
-import com.service.ArticleService;
-import com.service.CommentService;
-import com.service.TagService;
-import com.service.UserService;
+import com.service.*;
 import com.utils.ResponseResult;
 import com.vo.ArticleInfoVo;
 import com.vo.ArticleVo;
@@ -54,6 +51,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     private ArticleTagMapper articleTagMapper;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private ThreadService threadService;
 
     /**
      * 分页查询全部文章
@@ -223,6 +222,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         articleInfoVo.setMdBody(article.getBodyMd());
         articleInfoVo.setSummary(article.getSummary());
         articleInfoVo.setTitle(article.getTitle());
+      //阅读数加一
+        threadService.updateViewCount(articleMapper,article);
        //创建时间
         Long createTime = article.getCreateTime();
         articleInfoVo.setCreateTime(createTime);
