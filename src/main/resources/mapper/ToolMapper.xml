@@ -19,4 +19,7 @@
         author_id,create_time,summary,
         cover
     </sql>
+    <select id="findToolCountById" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM blog_tool WHERE author_id = #{id}
+    </select>
 </mapper>

@@ -1,6 +1,8 @@
 package com.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -20,6 +22,7 @@ public class UserRole implements Serializable {
      */
     //    防止精度丢失
     @JsonSerialize(using = ToStringSerializer.class)
+    @TableId(type = IdType.AUTO)
     private Long userId;
 
     /**

@@ -2,6 +2,7 @@ package com.controller;
 
 import com.service.WorkService;
 import com.utils.ResponseResult;
+import com.vo.params.RootPage;
 import com.vo.params.WorkParams;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class WorkController {
 
 
     @GetMapping("author/works")
-    private ResponseResult getWork(){
-      return workService.getWork();
+    private ResponseResult getWork(RootPage rootPage){
+      return workService.getWork(rootPage);
     }
 
 

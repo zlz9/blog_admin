@@ -1,7 +1,8 @@
 package com.mapper;
 
-import com.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.domain.User;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,6 +14,10 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
+
+    Page<User> findAllUser(Page<User> page);
+
+    Long findUserRoleById(Long id);
 }
 
 

@@ -2,6 +2,7 @@ package com.controller;
 
 import com.service.ToolService;
 import com.utils.ResponseResult;
+import com.vo.params.RootPage;
 import com.vo.params.ToolParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,8 @@ public class ToolController {
     @Autowired
     private ToolService toolService;
     @GetMapping("/tool")
-    private ResponseResult getTool(){
-        return toolService.getTool();
+    private ResponseResult getTool(RootPage rootPage){
+        return toolService.getTool(rootPage);
     }
     @PostMapping("/tool/upload")
     private ResponseResult uploadTool(@RequestBody ToolParams toolParams){

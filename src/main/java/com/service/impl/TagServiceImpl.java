@@ -9,6 +9,7 @@ import com.utils.ResponseResult;
 import com.vo.ArticleVo;
 import com.vo.TagVo;
 import com.vo.params.TagPageParams;
+import com.vo.params.TagParams;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,15 +38,6 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
         return copyList(tags);
     }
 
-    @Override
-    public ResponseResult addTag(String tagName) {
-        Tag tag = new Tag();
-        tag.setTagName(tagName);
-        tagMapper.insert(tag);
-
-        return new ResponseResult<>(200, "添加标签成功");
-    }
-
     /**
      * 获取标签列表
      * @return
@@ -62,7 +54,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
 
     /**
      * 根据tagId查找文章
-     * @param id
+     * @param
      * @return
      */
     @Override
@@ -75,6 +67,31 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
             return new ResponseResult<>(400,"文章不存在");
         }
         return new ResponseResult<>(200, articleList);
+    }
+
+    /**
+     * 添加标签
+     * @param tagParams
+     * @return
+     */
+    @Override
+    public ResponseResult addTag(TagParams tagParams) {
+        Tag tag = new Tag();
+        tag.setTagName(tagParams.getTagName());
+        tag.setTagCover(tag.getTagCover());
+        tagMapper.insert(tag);
+        return new ResponseResult<>(200,"创建标签成功");
+    }
+
+    /**
+     * 查询用户发布最多的标签
+     * @param id
+     * @return
+     */
+    @Override
+    public List<TagVo> getTagsById(Long id) {
+       List <TagVo> tagVoList= tagMapper.findTagsByUserId(id);
+        return tagVoList;
     }
 
     /**

@@ -1,6 +1,7 @@
  package com.service.impl;
 
  import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
  import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
  import com.domain.LoginUser;
  import com.domain.Work;
@@ -12,6 +13,7 @@
  import com.utils.ResponseResult;
  import com.vo.WorkImgVo;
  import com.vo.WorkVo;
+ import com.vo.params.RootPage;
  import com.vo.params.WorkParams;
  import org.springframework.beans.BeanUtils;
  import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@
  import org.springframework.transaction.annotation.Transactional;
 
  import java.util.ArrayList;
+ import java.util.HashMap;
  import java.util.List;
 
 /**
@@ -43,15 +46,21 @@ public class WorkServiceImpl extends ServiceImpl<WorkMapper, Work>
      * @return
      */
     @Override
-    public ResponseResult getWork() {
-       LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseResult getWork(RootPage rootPage) {
+        Page<Work> page = new Page<>(rootPage.getPage(),rootPage.getPageSize());
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long id = loginUser.getUser().getId();
         LambdaQueryWrapper<Work> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Work::getAuthorId, id);
         queryWrapper.orderByDesc(Work::getCreateTime);
-        List<Work> works = workMapper.selectList(queryWrapper);
-        List<WorkVo> workVoList = copyList(works);
-        return new ResponseResult(200, workVoList);
+        Page<Work> workPage = workMapper.selectPage(page, queryWrapper);
+        List<Work> records = workPage.getRecords();
+        List<WorkVo> workVoList = copyList(records);
+        long total = workPage.getTotal();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("workList", workVoList);
+        map.put("total", total);
+        return new ResponseResult(200, map);
     }
 
     /**
@@ -112,6 +121,26 @@ public class WorkServiceImpl extends ServiceImpl<WorkMapper, Work>
         LambdaQueryWrapper<WorkImg> eq = wq.eq(WorkImg::getWorkId, id);
         workImgMapper.delete(eq);
         return new ResponseResult(200, "删除成功");
+    }
+
+    @Override
+    public Integer getWorkCountById(Long id) {
+       Integer count =  workMapper.findWorkCountById(id);
+        return count;
+    }
+
+    /**
+     * 根据当前登录用户获取作品数
+     * @return
+     */
+    @Override
+    public ResponseResult getWorkCount() {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = loginUser.getUser().getId();
+        LambdaQueryWrapper<Work> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Work::getAuthorId,id);
+        Integer count = workMapper.selectCount(queryWrapper);
+        return new ResponseResult<>(200,count);
     }
 
     private List<WorkVo> copyList(List<Work> works) {

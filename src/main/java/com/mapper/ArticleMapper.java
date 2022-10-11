@@ -14,6 +14,10 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ArticleMapper extends BaseMapper<Article> {
 
     Article findArticleInfo(Long id);
+
+    Integer findArticleByUserId(Long id);
+
+    Integer findArticleViewById(Long id);
 }
 
 

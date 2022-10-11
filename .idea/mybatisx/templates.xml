@@ -63,8 +63,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="Tool" />
-                  <option name="tableName" value="blog_tool" />
+                  <option name="className" value="ArticleLiked" />
+                  <option name="tableName" value="blog_article_liked" />
                 </TableUIInfo>
               </list>
             </option>

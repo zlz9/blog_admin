@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.domain.Article;
 import com.utils.ResponseResult;
 import com.vo.ArticleInfoVo;
+import com.vo.params.LikeParams;
 import com.vo.params.PageParams;
 import com.vo.params.PublishArticleParams;
 
@@ -28,4 +29,13 @@ public interface ArticleService extends IService<Article> {
 
     ResponseResult updateArticle(ArticleInfoVo articleInfoVo);
 
+    ResponseResult Liked(LikeParams likeParams);
+
+    Integer getArticleCountById(Long id);
+
+    ResponseResult searchArticle(String title);
+
+    ResponseResult getArticleView();
+
+    ResponseResult getArticleMonth();
 }

@@ -1,6 +1,7 @@
 package com.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.Comment;
 import com.domain.LoginUser;
@@ -11,6 +12,7 @@ import com.service.UserService;
 import com.utils.ResponseResult;
 import com.vo.CommentVo;
 import com.vo.UserVo;
+import com.vo.params.CommentPageParams;
 import com.vo.params.CommentParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -40,19 +42,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
     private UserService userService;
 
     /**
-     * 根据文章id获取评论
-     * @param id
+     * 根据文章id分页获取评论
      * @return
      */
     @Override
-    public ResponseResult getCommentByArticleId(Long id) {
+    public ResponseResult getCommentByArticleId(CommentPageParams commentPageParams) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Comment::getArticleId,id);
+        Page<Comment> page = new Page<>(commentPageParams.getPage(), commentPageParams.getPageSize());
+        queryWrapper.eq(Comment::getArticleId,commentPageParams.getId());
         queryWrapper.eq(Comment::getLevel,1);
         queryWrapper.orderByDesc(Comment::getCreateDate);
-        List<Comment> comments = commentMapper.selectList(queryWrapper);
-        List<CommentVo> commentVoList = copyList(comments);
-
+        Page<Comment> commentPage = commentMapper.selectPage(page,queryWrapper);
+        List<Comment> records = commentPage.getRecords();
+        List<CommentVo> commentVoList = copyList(records);
         return new ResponseResult<>(200,commentVoList);
     }
 

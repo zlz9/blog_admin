@@ -29,4 +29,5 @@ public class UserParams {
     private String motto;
 //    @ApiModelProperty(name = "birthday", value = "出生日期", example = "213132131", required = true)
     private Long birthday;
+    private String role;
 }

@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ArticleTagMapper extends BaseMapper<ArticleTag> {
 
+    Integer findArticleNumBytag(Long tagId);
 }
 
 

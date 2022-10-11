@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface WorkMapper extends BaseMapper<Work> {
 
+    Integer findWorkCountById(Long id);
 }
 
 

@@ -22,10 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationEntryPoint authenticationEntryPoint;
-
     @Autowired
     private AccessDeniedHandler accessDeniedHandler;
-
     @Autowired
     JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
     @Autowired
@@ -45,8 +43,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui.html",
             "/api/captcha",
             "/api/sendEmail/**",
-            "/api/user/register/**"
-
+            "/api/user/register/**",
+             "/api/article/**",
+            "/api/user/menu"
     };
 
     @Override
@@ -60,7 +59,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
                 .antMatchers(URL_WHITELIST)
-                .anonymous()
+                .permitAll()
+//                .anonymous()
                 .anyRequest().authenticated();
         //把token校验过滤器添加到过滤器链
         http.addFilterBefore(jwtAuthenticationTokenFilter,UsernamePasswordAuthenticationFilter.class);

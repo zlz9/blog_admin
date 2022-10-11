@@ -24,4 +24,15 @@
     <select id="findArticleInfo" resultType="com.domain.Article">
         select summary ,title,body_html,body_md from blog_article where  id = #{id}
     </select>
+    <select id="findArticleByUserId" resultType="java.lang.Integer">
+        SELECT
+            COUNT( * ) as articleCount
+        FROM
+            blog_article ba
+                LEFT JOIN blog_user bu ON ba.author_id = bu.id
+        WHERE bu.id = #{id}
+    </select>
+    <select id="findArticleViewById" resultType="java.lang.Integer">
+        SELECT SUM(view_count) from blog_article WHERE author_id = #{id}
+    </select>
 </mapper>

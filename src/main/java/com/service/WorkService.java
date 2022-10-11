@@ -3,6 +3,7 @@ package com.service;
 import com.domain.Work;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.utils.ResponseResult;
+import com.vo.params.RootPage;
 import com.vo.params.WorkParams;
 /**
 * @author 23340
@@ -11,11 +12,15 @@ import com.vo.params.WorkParams;
 */
 public interface WorkService extends IService<Work> {
 
-    ResponseResult getWork();
+    ResponseResult getWork(RootPage rootPage);
 
     ResponseResult getWorkInfo(Long id);
 
     ResponseResult updateWork(WorkParams workParams);
 
     ResponseResult deleteWork(Long id);
+
+    Integer getWorkCountById(Long id);
+
+    ResponseResult getWorkCount();
 }

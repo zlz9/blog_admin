@@ -12,4 +12,7 @@
     <sql id="Base_Column_List">
         user_id,role_id
     </sql>
+    <select id="findRole" resultType="java.lang.String">
+        SELECT br.`name` FROM blog_user_role bur LEFT JOIN blog_role br ON  bur.role_id = br.id WHERE bur.user_id=#{id}
+    </select>
 </mapper>

@@ -1,11 +1,10 @@
 package com.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -28,6 +27,10 @@ public class ArticleLiked implements Serializable {
      * 点赞的状态，1标识已赞，0标识取消赞
      */
     private Boolean likeStatus;
+    /**
+     * 创建时间
+     */
+    private Long createTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -1,13 +1,14 @@
 package com.controller;
 
+import com.service.ArticleLikedService;
 import com.service.ArticleService;
 import com.utils.ResponseResult;
 import com.vo.ArticleInfoVo;
+import com.vo.params.LikeParams;
 import com.vo.params.PageParams;
 import com.vo.params.PublishArticleParams;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,19 +26,16 @@ import org.springframework.web.bind.annotation.*;
 public class ArticleController {
     @Autowired
     private ArticleService articleService;
+    @Autowired
+    private ArticleLikedService articleLikedService;
     /**
      * 分页查询所有文章
      */
     @ApiOperation(value = "获取文章",notes = "文章分页，必填")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "文章分页", required = true),
-            @ApiImplicitParam(name = "pageSize", value = "每页数量", required = true)
-    })
     @GetMapping("article")
     public ResponseResult getArticle(PageParams pageParams){
         return articleService.getArticle(pageParams);
     }
-
     /**
      *根据id删除文章
      * @param id
@@ -96,5 +94,19 @@ public class ArticleController {
     @PostMapping("/article/update")
     private ResponseResult updateArticle(@RequestBody ArticleInfoVo articleInfoVo){
         return articleService.updateArticle(articleInfoVo);
+    }
+    /**
+     * 文章点赞
+     */
+    @PostMapping("article/like")
+    private ResponseResult articleLike(@RequestBody LikeParams likeParams){
+        return articleService.Liked(likeParams);
+    }
+    /**
+     * 查询文章标题
+     */
+    @GetMapping("article/search/{title}")
+    private ResponseResult articleSearch(@PathVariable String title){
+        return articleService.searchArticle(title);
     }
 }

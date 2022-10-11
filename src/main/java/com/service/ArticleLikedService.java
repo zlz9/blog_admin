@@ -1,7 +1,8 @@
 package com.service;
 
-import com.domain.ArticleLiked;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.domain.ArticleLiked;
+import com.vo.params.LikeParams;
 
 /**
 * @author 23340
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ArticleLikedService extends IService<ArticleLiked> {
 
+    ArticleLiked InsertLiked(LikeParams likeParams);
 }

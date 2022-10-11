@@ -3,6 +3,7 @@ package com.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.domain.Comment;
 import com.utils.ResponseResult;
+import com.vo.params.CommentPageParams;
 import com.vo.params.CommentParams;
 
 /**
@@ -12,7 +13,7 @@ import com.vo.params.CommentParams;
 */
 public interface CommentService extends IService<Comment> {
 
-    ResponseResult getCommentByArticleId(Long id);
+    ResponseResult getCommentByArticleId(CommentPageParams commentPageParams);
 
     ResponseResult comment(CommentParams commentParams);
 }

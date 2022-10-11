@@ -3,8 +3,8 @@ package com.controller;
 import com.service.TagService;
 import com.utils.ResponseResult;
 import com.vo.params.TagPageParams;
+import com.vo.params.TagParams;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,11 +27,10 @@ public class TagController {
      * @param tagName
      * @return
      */
-    @ApiOperation(value = "添加文章标签",notes = "添加文章标签，路径参数{tagName}必填")
-    @ApiImplicitParam(name = "{tagName}",value = "要添加的文章标签")
-    @PostMapping("article/tag/add/{tagName}")
-    private ResponseResult addTag(@PathVariable String tagName){
-        return tagService.addTag(tagName);
+    @ApiOperation(value = "添加文章标签",notes = "添加文章标签")
+    @PostMapping("article/tag/add/")
+    private ResponseResult addTag(@RequestBody TagParams tagParams){
+        return tagService.addTag(tagParams);
     }
 
     /**

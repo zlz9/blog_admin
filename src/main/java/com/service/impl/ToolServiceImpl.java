@@ -1,18 +1,21 @@
 package com.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.LoginUser;
 import com.domain.Tool;
 import com.service.ToolService;
 import com.mapper.ToolMapper;
 import com.utils.ResponseResult;
+import com.vo.params.RootPage;
 import com.vo.params.ToolParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -30,16 +33,22 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
      * @return
      */
     @Override
-    public ResponseResult getTool() {
-       LoginUser  loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseResult getTool(RootPage rootPage) {
+        Page<Tool> page = new Page<>(rootPage.getPage(),rootPage.getPageSize());
+        LoginUser  loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         LambdaQueryWrapper<Tool> wq = new LambdaQueryWrapper<>();
         wq.orderByDesc(Tool::getCreateTime);
         wq.eq(Tool::getAuthorId, loginUser.getUser().getId());
-        List<Tool> tools = toolMapper.selectList(wq);
-        if (ObjectUtils.isEmpty(tools)) {
+        Page<Tool> toolPage = toolMapper.selectPage(page, wq);
+        List<Tool> records = toolPage.getRecords();
+        long total = toolPage.getTotal();
+        if (ObjectUtils.isEmpty(records)) {
             return new ResponseResult(404, "找不到工具");
         }
-        return new ResponseResult<>(200,tools);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("total",total);
+        map.put("data", records);
+        return new ResponseResult<>(200,map);
     }
 
     /**
@@ -75,6 +84,17 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
             return new ResponseResult<>(400,"删除失败");
         }
         return new ResponseResult<>(200,"删除成功");
+    }
+
+    /**
+     * 根据用户id查询用户上传的工具数
+     * @param id
+     * @return
+     */
+    @Override
+    public Integer getToolCountById(Long id) {
+     Integer toolCount = toolMapper.findToolCountById(id);
+        return toolCount;
     }
 }
 

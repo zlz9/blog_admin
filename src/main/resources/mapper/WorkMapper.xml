@@ -21,4 +21,7 @@
         description,author_id,status,
         link_github,link_gitee,img_id
     </sql>
+    <select id="findWorkCountById" resultType="java.lang.Integer">
+        SELECT COUNT(*) as count FROM blog_work  WHERE  author_id =#{id}
+    </select>
 </mapper>

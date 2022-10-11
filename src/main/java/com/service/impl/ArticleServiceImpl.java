@@ -1,19 +1,25 @@
 package com.service.impl;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.Article;
+import com.domain.ArticleLiked;
 import com.domain.ArticleTag;
 import com.domain.LoginUser;
+import com.mapper.ArticleLikedMapper;
 import com.mapper.ArticleMapper;
 import com.mapper.ArticleTagMapper;
 import com.service.*;
+import com.utils.RedisCache;
 import com.utils.ResponseResult;
 import com.vo.ArticleInfoVo;
 import com.vo.ArticleVo;
 import com.vo.TagVo;
 import com.vo.UserVo;
+import com.vo.params.LikeParams;
 import com.vo.params.PageParams;
 import com.vo.params.PublishArticleParams;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +30,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -41,6 +48,12 @@ import java.util.Objects;
 @Transactional
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         implements ArticleService {
+    @Autowired
+    private ArticleLikedMapper articleLikedMapper;
+    @Autowired
+    private RedisCache redisCache;
+    @Autowired
+    private ArticleLikedService articleLikedService;
     @Autowired
     private ArticleMapper articleMapper;
     @Autowired
@@ -66,7 +79,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
          */
         Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.orderByDesc(Article::getWeight, Article::getCreateTime);
+        queryWrapper.orderByDesc(Article::getWeight, Article::getCreateTime,Article::getViewCount);
 //        判断是否删除
 //        queryWrapper.eq(Article::getDelFlag, "0");
         Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
@@ -159,7 +172,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         if (ObjectUtils.isEmpty(publishArticleParams)) {
             return new ResponseResult<>(400, "参数错误");
         }
-
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long id = loginUser.getUser().getId();
         Article article = new Article();
@@ -281,6 +293,85 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         return new ResponseResult<>(200,"成功");
     }
 
+    /**
+     * 1.文章点赞
+     * 2.加入缓存
+     * 3.开启定时任务,写入数据库
+     * 4.查找文章id 文章的点赞数+1
+     * @param likeParams
+     * @return
+     */
+    @Override
+    public ResponseResult Liked(LikeParams likeParams) {
+//        TODO 未来再用redis做优化
+        Long articleId = likeParams.getArticleId();
+//        插入点赞表-
+        ArticleLiked articleLiked = articleLikedService.InsertLiked(likeParams);
+//        根据点赞表统计点赞数
+        Integer likeCount =articleLikedMapper.getTotal(articleId);
+//        更新文章点赞数
+        Article article = articleMapper.selectById(articleId);
+        article.setLikeCount(likeCount);
+        return new ResponseResult<>(200,"点赞成功");
+    }
+
+    /**
+     * 获取用户的文章数
+     * @param id
+     * @return
+     */
+    @Override
+    public Integer getArticleCountById(Long id) {
+       Integer articleCount = articleMapper.findArticleByUserId(id);
+        return articleCount;
+    }
+
+    /**
+     * 搜索文章题目
+     * @param title
+     * @return
+     */
+    @Override
+    public ResponseResult searchArticle(String title) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(Article::getTitle, title);
+        List<Article> articleList = articleMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(articleList)) {
+            return new ResponseResult<>(404,"找不到文章");
+        }
+        return new ResponseResult<>(200,articleList);
+    }
+
+    /**
+     * 获取当前用户文章的的阅读数
+     * @return
+     */
+    @Override
+    public ResponseResult getArticleView() {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = loginUser.getUser().getId();
+       Integer viewCount =  articleMapper.findArticleViewById(id);
+        return new ResponseResult<>(200, viewCount);
+    }
+
+    /**
+     *查询用户前30天文章数
+     * @return
+     */
+    @Override
+    public ResponseResult getArticleMonth() {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = loginUser.getUser().getId();
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        DateTime dateTime = DateUtil.lastMonth();
+        long lastMonth = dateTime.getTime();
+        long currentTime = System.currentTimeMillis();
+        queryWrapper.between(Article::getCreateTime, lastMonth, currentTime)
+                .eq(Article::getAuthorId, id);
+        Integer count = articleMapper.selectCount(queryWrapper);
+        return new ResponseResult(200, count);
+    }
+
     private List<ArticleVo> copyList(List<Article> records, boolean isTag, boolean isAuthor) {
         List<ArticleVo> articleVoList = new ArrayList<>();
         for (Article record : records) {
@@ -288,7 +379,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
         return articleVoList;
     }
-
     private ArticleVo copy(Article article, boolean isTag, boolean isAuthor) {
         ArticleVo articleVo = new ArticleVo();
         BeanUtils.copyProperties(article, articleVo);

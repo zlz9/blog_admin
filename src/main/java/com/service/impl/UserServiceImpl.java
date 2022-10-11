@@ -1,29 +1,41 @@
 package com.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.LoginUser;
 import com.domain.User;
 import com.domain.UserRole;
 import com.lang.Const;
+import com.mapper.TagMapper;
 import com.mapper.UserMapper;
 import com.mapper.UserRoleMapper;
-import com.service.UserService;
+import com.service.*;
 import com.utils.RedisCache;
 import com.utils.ResponseResult;
 import com.utils.UserNameUtils;
+import com.vo.TagArticleVo;
+import com.vo.TagVo;
+import com.vo.UserDetailsVo;
 import com.vo.UserVo;
 import com.vo.params.RegisterParams;
+import com.vo.params.RoleParams;
+import com.vo.params.RootPage;
 import com.vo.params.UserParams;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 /**
 * @author 23340
 * @description 针对表【blog_user】的数据库操作Service实现
@@ -34,6 +46,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
     @Autowired
+    private ArticleTagService articleTagService;
+    @Autowired
+    private TagMapper tagMapper;
+    @Autowired
     private UserMapper userMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -41,6 +57,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private RedisCache redisCache;
     @Autowired
     private UserRoleMapper userRoleMapper;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private ToolService toolService;
+    @Autowired
+    private WorkService workService;
+    @Autowired
+    @Lazy
+    private ArticleService articleService;
 
     @Override
     public UserVo findUserVoById(Long id) {
@@ -49,7 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             user = new User();
             user.setNickName("快乐的小猪仔");
 //            TODO 填写默认头像
-            user.setAvator("这里填写默认值");
+            user.setAvator("http://qiniu.zhoulizheng.cn/43507260-9412-4a12-88f4-eddb2c3a858f.jpg");
         }
         UserVo userVo = new UserVo();
         BeanUtils.copyProperties(user, userVo);
@@ -154,7 +179,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         userMapper.updateById(user);
         return new ResponseResult<>(200, "更新成功");
     }
-
+    
     /**
      * 用户详情模块
      * @param
@@ -173,6 +198,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         userParams.setEmail(user.getEmail());
         userParams.setMotto(user.getMotto());
         userParams.setBirthday(user.getBirthday());
+        userParams.setRole(userRoleMapper.findRole(id));
 //        userParams.setId(user.getId());
         Boolean sex = user.getSex();
         if (!sex) {
@@ -183,13 +209,171 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         userParams.setNickName(user.getNickName());
         userParams.setPhone(user.getPhoneNumber());
-        if (user == null) {
-            return new ResponseResult<>(400, "用户不存在");
-        }
+
         return new ResponseResult<>(200, userParams);
     }
+
+    /**
+     * 查询所有用户信息
+     * @return
+     */
+    @Override
+    public ResponseResult findAllUser(RootPage rootPage) {
+        Page<User> page = new Page<>(rootPage.getPage(), rootPage.getPageSize());
+        //分页查询所有用户信息
+       Page<User> userPage= userMapper.findAllUser(page);
+        List<User> records = userPage.getRecords();
+        return new ResponseResult<>(200,records);
+    }
+
+    /**
+     * 根据id查找用户详细信息
+     * @param id
+     * @return
+     */
+    //TODO 查找用户详细信息
+    @Override
+    public ResponseResult findUserDetailsById(Long id) {
+        UserDetailsVo userDetailsVo = new UserDetailsVo();
+        userDetailsVo.setUserInfo(this.findUserVoById(id));
+        userDetailsVo.setStatus(userMapper.selectById(id).getStatus());
+        userDetailsVo.setArticleCount(articleService.getArticleCountById(id));
+        userDetailsVo.setWorkCount(workService.getWorkCountById(id));
+        userDetailsVo.setToolCount(toolService.getToolCountById(id));
+        userDetailsVo.setTagVos(tagService.getTagsById(id));
+        userDetailsVo.setRole(userMapper.findUserRoleById(id));
+        User user = userMapper.selectById(id);
+        userDetailsVo.setEmail(user.getEmail());
+        return new ResponseResult<>(200,userDetailsVo);
+    }
+    /**
+     * 设置用户信息
+     * 1.根据id查找角色id
+     * 2.查找用户id后判断角色id
+     * 3.设置角色为
+     * @param roleParams
+     * @return
+     */
+    @Override
+    public ResponseResult setRole(RoleParams roleParams) {
+        UserRole userRole = new UserRole();
+        LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserRole::getUserId,roleParams.getId());
+        UserRole role = userRoleMapper.selectOne(wrapper);
+        if (role.getRoleId()!=1) {
+            userRole.setRoleId(roleParams.getRole());
+            userRole.setUserId(roleParams.getId());
+            userRoleMapper.updateById(userRole);
+        }else{
+            return new ResponseResult<>(403,"您没有权限");
+        }
+        return new ResponseResult<>(200,"操作成功");
+    }
+
+    /**
+     * 用户强制下线,并且锁定用户
+     * 1.根据id查询用户
+     * 2.将用户锁定用户id
+     * 3.查询redis，删除redis中的用户信息
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult lockAccount(Long id) {
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            return new ResponseResult<>(404,"用户不存在");
+        }
+        redisCache.deleteObject("login:"+user.getId());
+        user.setStatus(false);
+        userMapper.updateById(user);
+        return new ResponseResult<>(200,"操作成功！");
+    }
+
+    /**
+     * 解锁用户
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult unlockAccount(Long id) {
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            return new ResponseResult<>(404,"用户不存在");
+        }
+        user.setStatus(true);
+        userMapper.updateById(user);
+        return new ResponseResult<>(200,"操作成功！");
+    }
+
+    /**
+     * 查询被锁定的用户
+     * @return
+     */
+    @Override
+    public ResponseResult findLockUser() {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getStatus,0);
+        List<User> users = userMapper.selectList(wrapper);
+        List<UserVo> userVoList = new ArrayList<>();
+        for (User user : users) {
+            userVoList.add(copy(user));
+        }
+        return new ResponseResult<>(200,userVoList);
+    }
+
+    /**
+     * 通过用户昵称查询用户
+     * @param nickName
+     * @return
+     */
+    @Override
+    public ResponseResult findUserByNickName(String nickName) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(User::getNickName, nickName);
+        List<User> users = userMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(users)) {
+            return new ResponseResult(404, "用户不存在");
+        }
+        return new ResponseResult<>(200,users);
+    }
+    /**
+     * 查询当前文章的标签对应的文章数
+     * @return
+     */
+    @Override
+    public ResponseResult UserSkills() {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        用户id
+        Long id = loginUser.getUser().getId();
+//        查询标签数量
+        List<TagVo> tagVos = tagMapper.findTagsByUserId(id);
+        List<TagArticleVo> tagArticleVos = new ArrayList<>();
+        for (TagVo tagVo : tagVos) {
+            TagArticleVo tagArticleVo = new TagArticleVo();
+            tagArticleVo.setTagName(tagVo.getTagName());
+            tagArticleVo.setArticleNum(articleTagService.findArticleNumBytag(tagVo.getTagId()));
+            tagArticleVos.add(tagArticleVo);
+        }
+        return new ResponseResult<>(200,tagArticleVos);
+    }
+
+    /**
+     * 查询当前登录用户技能
+     * 1.查询用户标签信息
+     * 2.根据标签信息查询每个标签对应的文章数
+     * @return
+     */
+    @Override
+    public ResponseResult userSkills() {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = loginUser.getUser().getId();
+        List<TagVo> tags = tagMapper.findTagsByUserId(id);
+        return null;
+    }
+    private UserVo copy(User user) {
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(user, userVo);
+        return userVo;
+    }
 }
-
-
-
-

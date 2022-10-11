@@ -3,6 +3,7 @@ package com.service;
 import com.domain.Tool;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.utils.ResponseResult;
+import com.vo.params.RootPage;
 import com.vo.params.ToolParams;
 
 /**
@@ -12,9 +13,11 @@ import com.vo.params.ToolParams;
 */
 public interface ToolService extends IService<Tool> {
 
-    ResponseResult getTool();
+    ResponseResult getTool(RootPage rootPage);
 
     ResponseResult uploadTool(ToolParams toolParams);
 
     ResponseResult deleteToolById(Long id);
+
+    Integer getToolCountById(Long id);
 }
