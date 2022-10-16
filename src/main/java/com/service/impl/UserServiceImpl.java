@@ -20,10 +20,7 @@ import com.vo.TagArticleVo;
 import com.vo.TagVo;
 import com.vo.UserDetailsVo;
 import com.vo.UserVo;
-import com.vo.params.RegisterParams;
-import com.vo.params.RoleParams;
-import com.vo.params.RootPage;
-import com.vo.params.UserParams;
+import com.vo.params.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
 * @author 23340
 * @description 针对表【blog_user】的数据库操作Service实现
@@ -46,13 +44,13 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private ArticleTagService articleTagService;
     @Autowired
     private TagMapper tagMapper;
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     @Autowired
     private RedisCache redisCache;
     @Autowired
@@ -108,6 +106,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         String ParamsCode = registerParams.getCode();
         String code = redisCache.getCacheObject("code");
+//        比对验证码
         if (!ParamsCode.equals(code)) {
          return new ResponseResult<>(443,"验证码错误！请重新获取验证码");
         }else if (StringUtils.isBlank(code)) {
@@ -124,6 +123,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setAvator(Const.REGISTER_AVATAR);
 //        默认密码
         String encodePassword = passwordEncoder.encode(registerParams.getPassword());
+//        查询用户名是否重复
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserName, registerParams.getUserName());
+        User repeatName = userMapper.selectOne(queryWrapper);
+        if (!ObjectUtils.isNull(repeatName)) {
+            return new ResponseResult<>(400,"用户名重复");
+        }
 //        设置用户名
         user.setUserName(registerParams.getUserName());
         user.setPassword(encodePassword);
@@ -132,7 +138,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 //        绑定角色
         userMapper.insert(user);
         UserRole userRole = new UserRole();
-        userRole.setUserId(user.getId());
+        Long id = user.getId();
+        userRole.setUserId(id);
         userRole.setRoleId(Const.REGISTER_ID);
         userRoleMapper.insert(userRole);
 //        注册成功后删除redis中的code
@@ -157,6 +164,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         //        获取SecurityContextHolder的用户id
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+//        判断用户名和昵称是否重复
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserName, userParams.getUserName());
+        queryWrapper.eq(User::getNickName, userParams.getUserName());
+        User repeat = userMapper.selectOne(queryWrapper);
+        if (!ObjectUtils.isNull(repeat)) {
+            return new ResponseResult<>(400,"用户名获取昵称重复");
+        }
         Long userid = loginUser.getUser().getId();
         User user = userMapper.selectById(userid);
         user.setAvator(userParams.getAvator());
@@ -263,7 +278,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (role.getRoleId()!=1) {
             userRole.setRoleId(roleParams.getRole());
             userRole.setUserId(roleParams.getId());
-            userRoleMapper.updateById(userRole);
+           userRoleMapper.updateById(userRole);
         }else{
             return new ResponseResult<>(403,"您没有权限");
         }
@@ -359,18 +374,74 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     /**
+     * 计算用户标签对应的文章数
+     *1。查询作者对应的标签
+     * 2.标签for循环查找作者对应的文章数
+     * @return
+     */
+    @Override
+    public ResponseResult getUserSkills() {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userid = loginUser.getUser().getId();
+        List<TagVo> tags = tagMapper.findTagsByUserId(userid);
+        List<TagArticleVo> tagArticleVos = new ArrayList<>();
+        for (TagVo tag : tags) {
+            TagArticleVo tagArticleVo = new TagArticleVo();
+//            查找作者对应的文章数
+         Integer articleCount = articleService.getArticleCountByUserIdTagId(userid,tag.getTagId());
+         tagArticleVo.setArticleNum(articleCount);
+         tagArticleVo.setTagName(tag.getTagName());
+         tagArticleVos.add(tagArticleVo);
+        }
+        return new ResponseResult<>(200,tagArticleVos);
+    }
+    /**TODO 只有超级管理员能访问
+     * 重置用户密码
+     * 1.根据id查询用户密码
+     * 2.重置用户密码
+     * @return
+     */
+    @Override
+    public ResponseResult reloadPassword(Long id) {
+        User user = userMapper.selectById(id);
+        String encode = passwordEncoder.encode(Const.REGISTER_PASSWORD);
+        user.setPassword(encode);
+        int i = userMapper.updateById(user);
+        if (i != 0){
+            return new ResponseResult<>(200,"重置密码成功,重置后密码为:"+Const.REGISTER_PASSWORD);
+        }else{
+         return  new ResponseResult<>(400,"重置密码失败");
+        }
+    }
+
+    /**
+     * 修改用户密码
+     * 1.拿到新密码去查询是否匹配
+     * 2.更新密码
+     * @param pwdParams
+     * @return
+     */
+    @Override
+    public ResponseResult newPassword(PwdParams pwdParams) {
+        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long id = loginUser.getUser().getId();
+        User user = userMapper.selectById(id);
+        boolean matches = passwordEncoder.matches(pwdParams.getOldPassword(), user.getPassword());
+//        如果旧密码和新密码相同
+        if (!matches) {
+            return new ResponseResult<>(405,"旧密码输入错误");
+        }
+        user.setPassword(passwordEncoder.encode(pwdParams.getNewPassword()));
+        userMapper.updateById(user);
+        return new ResponseResult<>(200,"更改密码成功！");
+    }
+
+    /**
      * 查询当前登录用户技能
      * 1.查询用户标签信息
      * 2.根据标签信息查询每个标签对应的文章数
      * @return
      */
-    @Override
-    public ResponseResult userSkills() {
-        LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long id = loginUser.getUser().getId();
-        List<TagVo> tags = tagMapper.findTagsByUserId(id);
-        return null;
-    }
     private UserVo copy(User user) {
         UserVo userVo = new UserVo();
         BeanUtils.copyProperties(user, userVo);

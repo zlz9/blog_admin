@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.service.ArticleService;
 import com.service.UserService;
 import com.utils.ResponseResult;
 import io.swagger.annotations.Api;
@@ -20,11 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api")
 public class SystemController {
+
     @Autowired
     private UserService userService;
+    @Autowired
+    private ArticleService articleService;
     @ApiOperation(value = "统计网站文章分类")
     @GetMapping("/system/user/skills")
     private ResponseResult UserSkills(){
         return userService.UserSkills();
     }
+     @ApiOperation("统计30天文章数分布")
+    @GetMapping("/article/month/all")
+    private ResponseResult getAllArticle(){
+        return articleService.getAllArticle();
+     }
 }

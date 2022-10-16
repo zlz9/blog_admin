@@ -15,10 +15,7 @@ import com.mapper.ArticleTagMapper;
 import com.service.*;
 import com.utils.RedisCache;
 import com.utils.ResponseResult;
-import com.vo.ArticleInfoVo;
-import com.vo.ArticleVo;
-import com.vo.TagVo;
-import com.vo.UserVo;
+import com.vo.*;
 import com.vo.params.LikeParams;
 import com.vo.params.PageParams;
 import com.vo.params.PublishArticleParams;
@@ -371,6 +368,46 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         Integer count = articleMapper.selectCount(queryWrapper);
         return new ResponseResult(200, count);
     }
+
+    /**
+     * 根据作者id和tagid 统计文章数
+     * @param userid
+     * @param tagId
+     * @return
+     */
+    @Override
+    public Integer getArticleCountByUserIdTagId(Long userid, Long tagId) {
+       Integer articleCount= articleMapper.findArticleCountByUserIdTagId(userid,tagId);
+        return articleCount;
+    }
+    /**TODO 只有超级管理员可以访问
+     * 统计30天内的文章发布请情况
+     * @return
+     */
+    @Override
+    public ResponseResult getAllArticle() {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        DateTime dateTime = DateUtil.lastMonth();
+        long threeMonth = dateTime.getTime();
+        long currentTime = System.currentTimeMillis();
+        queryWrapper.between(Article::getCreateTime,threeMonth,currentTime);
+        List<Article> articleList = articleMapper.selectList(queryWrapper);
+        ArrayList<ArticleLineVo> articleLineVos = new ArrayList<>();
+        for (Article article : articleList) {
+            ArticleLineVo line = new ArticleLineVo();
+            DateTime date = DateUtil.date(article.getCreateTime());
+            DateTime begin = DateUtil.beginOfDay(date);
+            String time = DateUtil.format(date, "MM/dd");
+            line.setTime(time);
+            LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
+             wrapper.between(Article::getCreateTime, begin.getTime(), date.getTime());
+            //            统计 同一时间
+            line.setCount(articleMapper.selectCount(wrapper));
+            articleLineVos.add(line);
+        }
+        return new ResponseResult<>(200,articleLineVos);
+    }
+
 
     private List<ArticleVo> copyList(List<Article> records, boolean isTag, boolean isAuthor) {
         List<ArticleVo> articleVoList = new ArrayList<>();

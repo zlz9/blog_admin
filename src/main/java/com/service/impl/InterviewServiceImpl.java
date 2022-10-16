@@ -60,6 +60,19 @@ public class InterviewServiceImpl extends ServiceImpl<InterviewMapper, Interview
         int insert = interviewMapper.insert(interview);
         return new ResponseResult<>(200,"插入成功");
     }
+    /**
+     * 根据id删除面试资料
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult delInterview(Long id) {
+        int i = interviewMapper.deleteById(id);
+        if (i==0){
+            return new ResponseResult<>(400,"删除失败");
+        }
+        return new ResponseResult<>(200,"删除成功");
+    }
 }
 
 

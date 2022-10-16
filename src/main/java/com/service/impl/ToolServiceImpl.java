@@ -13,6 +13,7 @@ import com.vo.params.ToolParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.List;
 * @createDate 2022-09-29 17:08:23
 */
 @Service
+@Transactional
 public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
     implements ToolService{
     @Autowired

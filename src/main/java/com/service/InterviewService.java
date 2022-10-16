@@ -15,4 +15,6 @@ public interface InterviewService extends IService<Interview> {
     ResponseResult getInterView();
 
     ResponseResult uploadInterView(InterViewParams interViewParams);
+
+    ResponseResult delInterview(Long id);
 }

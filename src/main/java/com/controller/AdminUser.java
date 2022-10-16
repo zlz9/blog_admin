@@ -4,6 +4,7 @@ import com.service.ArticleService;
 import com.service.UserService;
 import com.service.WorkService;
 import com.utils.ResponseResult;
+import com.vo.params.PwdParams;
 import com.vo.params.RoleParams;
 import com.vo.params.RootPage;
 import io.swagger.annotations.Api;
@@ -68,15 +69,11 @@ public class AdminUser {
     private ResponseResult findUserByNickName(@PathVariable String nickName){
         return userService.findUserByNickName(nickName);
     }
-
-    @ApiOperation("查询用户技能")
+    @ApiOperation("统计用户文章分布")
     @GetMapping ("/user/skill")
     private ResponseResult getUserSkills(){
-        return  userService.userSkills();
+        return  userService.getUserSkills();
     }
-
-
-
     @ApiOperation("统计用户文章的阅读数")
     @GetMapping("/user/article/viewCount")
     private ResponseResult viewcount(){
@@ -86,5 +83,15 @@ public class AdminUser {
     @GetMapping("/user/work/count")
     private ResponseResult workCount(){
         return workService.getWorkCount();
+    }
+    @ApiOperation("重置用户密码")
+    @GetMapping("/reload/password/{id}")
+    private ResponseResult reloadPassword(@PathVariable Long id){
+        return userService.reloadPassword(id);
+    }
+    @ApiOperation("修改用户密码")
+    @PostMapping("/user/newpassword")
+    private ResponseResult newPassword(@RequestBody PwdParams pwdParams){
+        return userService.newPassword(pwdParams);
     }
 }

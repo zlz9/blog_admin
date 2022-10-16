@@ -18,6 +18,8 @@ public interface ArticleMapper extends BaseMapper<Article> {
     Integer findArticleByUserId(Long id);
 
     Integer findArticleViewById(Long id);
+
+    Integer findArticleCountByUserIdTagId(Long userid, Long tagId);
 }
 
 

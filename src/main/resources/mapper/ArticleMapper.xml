@@ -35,4 +35,15 @@
     <select id="findArticleViewById" resultType="java.lang.Integer">
         SELECT SUM(view_count) from blog_article WHERE author_id = #{id}
     </select>
+    <select id="findArticleCountByUserIdTagId" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*) as articleCount
+        FROM
+            blog_article ba
+                RIGHT JOIN blog_article_tag bat ON ba.id = bat.article_id
+        WHERE
+            author_id = #{userid}
+          AND
+            bat.tag_id = #{tagId}
+    </select>
 </mapper>

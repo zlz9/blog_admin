@@ -38,4 +38,9 @@ public interface ArticleService extends IService<Article> {
     ResponseResult getArticleView();
 
     ResponseResult getArticleMonth();
+
+    Integer getArticleCountByUserIdTagId(Long userid, Long tagId);
+
+    ResponseResult getAllArticle();
 }
+

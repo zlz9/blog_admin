@@ -25,8 +25,8 @@ class BlogAdminApplicationTests {
     }
     @Test
     public void RawPassword(){
-        boolean matches = passwordEncoder.matches("admin",
-                "$2a$10$S91FP7Ygg8Dh9ODE3vSbQ.MTklyzYrLZZ.vaWwVD3XrVfwql2f9sS");
+        boolean matches = passwordEncoder.matches("aaa123456",
+                "$2a$10$bnfX4x7TOtAEhcrClDsfoeOTj1YEugn5WJg9Peh3VPeS7W4tCQYOy");
         System.out.println(matches);
     }
     /**

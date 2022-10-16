@@ -4,10 +4,7 @@ import com.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.utils.ResponseResult;
 import com.vo.UserVo;
-import com.vo.params.RegisterParams;
-import com.vo.params.RoleParams;
-import com.vo.params.RootPage;
-import com.vo.params.UserParams;
+import com.vo.params.*;
 
 /**
 * @author 23340
@@ -40,5 +37,9 @@ public interface UserService extends IService<User> {
 
     ResponseResult UserSkills();
 
-    ResponseResult userSkills();
+    ResponseResult getUserSkills();
+
+    ResponseResult reloadPassword(Long id);
+
+    ResponseResult newPassword(PwdParams pwdParams);
 }
