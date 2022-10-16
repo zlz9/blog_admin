@@ -20,4 +20,22 @@
         WHERE
             tag_id IN ( SELECT tag_id FROM blog_article_tag WHERE article_id = #{articleId} )
     </select>
+    <select id="selectArticleBytagId" resultType="com.vo.ArticleVo">
+        select
+            id,comment_id,author_id,create_time,summary,body_html,body_md,view_count,weight,title
+        from blog_article where id in (select article_id from blog_article_tag where tag_id = #{id}) order by create_time desc
+    </select>
+    <select id="findTagsByUserId" resultType="com.vo.TagVo">
+        SELECT DISTINCT
+            bt.tag_id,
+            bt.tag_name,
+            bt.tag_cover
+        FROM
+            blog_tag bt
+                LEFT JOIN blog_article_tag bat ON bt.tag_id = bat.tag_id
+                LEFT JOIN blog_article ba ON bat.article_id = ba.id
+        WHERE ba.author_id = #{id}
+        ORDER BY
+            bt.tag_id DESC
+    </select>
 </mapper>

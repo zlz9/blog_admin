@@ -11,8 +11,24 @@ import lombok.Data;
  **/
 @Data
 public class CommentParams {
+    /**
+     * 文章id
+     */
     private Long articleId;
+    /**
+     * 评内容
+     */
     private String content;
-    private Long parent;
+    /**
+     * 父id
+     */
+    private Long parentId;
+    /**
+     * 回复谁的评论
+     */
     private Long toUserId;
+    /**
+     * 层级
+     */
+    private Integer level;
 }

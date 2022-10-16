@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.domain.ArticleTag;
 import com.service.ArticleTagService;
 import com.mapper.ArticleTagMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,7 +15,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, ArticleTag>
     implements ArticleTagService{
-
+    @Autowired
+    private ArticleTagMapper articleTagMapper;
+    /**
+     * 查询标签对应的文章数
+     * @param tagId
+     * @return
+     */
+    @Override
+    public Integer findArticleNumBytag(Long tagId) {
+      Integer articleCount=  articleTagMapper.findArticleNumBytag(tagId);
+        return articleCount;
+    }
 }
 
 

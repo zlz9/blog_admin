@@ -12,5 +12,6 @@ import lombok.Data;
 @Data
 public class TagVo {
     private Long tagId;
+    private String tagCover;
     private String tagName;
 }

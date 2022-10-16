@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,6 +24,8 @@ public class Menu implements Serializable {
      * 
      */
     @TableId(type = IdType.AUTO)
+    //    防止精度丢失
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -91,6 +95,10 @@ public class Menu implements Serializable {
     private String remark;
     private Long parentId;
     private String redirect;
+    /**
+     * 是否展示
+     */
+    private String isShow;
 
     @TableField(exist = false)
 

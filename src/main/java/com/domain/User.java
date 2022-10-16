@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,6 +21,8 @@ public class User implements Serializable {
      * 用户 id
      */
     @TableId(type = IdType.AUTO)
+    //    防止精度丢失
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -75,7 +79,14 @@ public class User implements Serializable {
      * 删除（0正常，1删除）
      */
     private Boolean delFlag;
-
+    /**
+     * 座右铭
+     */
+    private String motto;
+    /**
+     * 生日
+     */
+    private  Long birthday;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

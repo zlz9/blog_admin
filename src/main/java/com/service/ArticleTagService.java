@@ -10,4 +10,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ArticleTagService extends IService<ArticleTag> {
 
+    Integer findArticleNumBytag(Long tagId);
 }

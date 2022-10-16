@@ -45,7 +45,6 @@ public class LoginUser implements UserDetails {
                 .collect(Collectors.toList());
         return authorities;
     }
-
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -60,17 +59,17 @@ public class LoginUser implements UserDetails {
     public boolean isAccountNonExpired() {
         return true;
     }
-
+//锁定账户
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.getStatus();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
-
+//注销账户
     @Override
     public boolean isEnabled() {
         return true;

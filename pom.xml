@@ -132,6 +132,12 @@
             <version>0.1.6</version>
             <scope>test</scope>
         </dependency>
+        <!--qq邮箱-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
 
     </dependencies>
 

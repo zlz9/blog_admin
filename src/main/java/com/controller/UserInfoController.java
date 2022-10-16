@@ -5,7 +5,6 @@ import com.service.UserService;
 import com.utils.ResponseResult;
 import com.vo.params.UserParams;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,6 @@ public class UserInfoController {
     private MenuService menuService;
 
     @ApiOperation(value = "完善/更新用户信息",notes = "参数必填")
-    @ApiImplicitParam(name = "userParams",value = "需要完善或者更新的信息")
     @PostMapping("user/fill/info")
     public ResponseResult FillUserInfo(@RequestBody UserParams userParams){
         return userService.FillUserInfo(userParams);

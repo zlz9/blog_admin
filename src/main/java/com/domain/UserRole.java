@@ -1,11 +1,11 @@
 package com.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -17,6 +17,8 @@ public class UserRole implements Serializable {
     /**
      * 用户id
      */
+    //    防止精度丢
+    @TableId
     private Long userId;
 
     /**

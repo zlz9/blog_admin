@@ -1,7 +1,9 @@
 package com.mapper;
 
-import com.domain.Tag;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.domain.Tag;
+import com.vo.ArticleVo;
+import com.vo.TagVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,6 +22,10 @@ public interface TagMapper extends BaseMapper<Tag> {
      * @return
      */
     List<Tag> findTagsByArticleId(Long articleId);
+
+    List<ArticleVo> selectArticleBytagId(Long id);
+
+    List<TagVo> findTagsByUserId(Long id);
 }
 
 
