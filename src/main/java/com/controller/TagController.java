@@ -28,7 +28,7 @@ public class TagController {
      * @return
      */
     @ApiOperation(value = "添加文章标签",notes = "添加文章标签")
-    @PostMapping("article/tag/add/")
+    @PostMapping("article/tag/add")
     private ResponseResult addTag(@RequestBody TagParams tagParams){
         return tagService.addTag(tagParams);
     }
@@ -50,4 +50,13 @@ public class TagController {
     @ApiOperation(value = "根据标签获取文章",notes = "根据所选标签获取文章")
     @GetMapping("tag/articles")
     public ResponseResult getArticleByTag( TagPageParams tagPageParams){return tagService.getArticleByTag(tagPageParams);}
+    /**
+     * 删除标签
+     */
+    @ApiOperation(value = "删除文章标签")
+    @GetMapping("/delete/tag/{id}")
+    public ResponseResult delTag(@PathVariable Long id){
+        return tagService.delTag(id);
+    }
+
 }

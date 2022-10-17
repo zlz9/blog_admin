@@ -164,13 +164,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         //        获取SecurityContextHolder的用户id
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-//        判断用户名和昵称是否重复
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getUserName, userParams.getUserName());
-        queryWrapper.eq(User::getNickName, userParams.getUserName());
-        User repeat = userMapper.selectOne(queryWrapper);
-        if (!ObjectUtils.isNull(repeat)) {
-            return new ResponseResult<>(400,"用户名获取昵称重复");
+//        判断用户名或者昵称是否重复
+     User repeatUser = userMapper.findRepeatUser(userParams.getUserName(),userParams.getNickName());
+        if (!ObjectUtils.isNull(repeatUser)) {
+            return new ResponseResult<>(400,"用户名或昵称重复");
         }
         Long userid = loginUser.getUser().getId();
         User user = userMapper.selectById(userid);

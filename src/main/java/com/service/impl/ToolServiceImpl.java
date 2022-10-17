@@ -66,6 +66,7 @@ public class ToolServiceImpl extends ServiceImpl<ToolMapper, Tool>
         tool.setCover(toolParams.getCover());
         tool.setLink(toolParams.getLink());
         tool.setName(toolParams.getName());
+        tool.setSummary(toolParams.getSummary());
         tool.setCreateTime(System.currentTimeMillis());
         int insert = toolMapper.insert(tool);
         if (insert == 0) {

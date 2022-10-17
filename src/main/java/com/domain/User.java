@@ -73,7 +73,7 @@ public class User implements Serializable {
     /**
      * 手机号
      */
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     /**
      * 删除（0正常，1删除）

@@ -18,6 +18,8 @@ public interface UserMapper extends BaseMapper<User> {
     Page<User> findAllUser(Page<User> page);
 
     Long findUserRoleById(Long id);
+
+    User findRepeatUser(String userName, String nickName);
 }
 
 
