@@ -1,8 +1,7 @@
 package com.mapper;
 
-import com.domain.WorkImg;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.domain.WorkImg;
 
 /**
 * @author 23340
@@ -10,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-09-22 16:34:10
 * @Entity com.domain.WorkImg
 */
-@Mapper
+
 public interface WorkImgMapper extends BaseMapper<WorkImg> {
 
 }

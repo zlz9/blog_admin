@@ -3,7 +3,6 @@ package com.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.domain.User;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author 23340
@@ -11,7 +10,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-08-13 11:02:25
 * @Entity com.domain.User
 */
-@Mapper
 public interface UserMapper extends BaseMapper<User> {
 
 
