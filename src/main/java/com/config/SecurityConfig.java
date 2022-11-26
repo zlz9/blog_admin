@@ -45,7 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/sendEmail/**",
             "/api/user/register/**",
              "/api/article/**",
-            "/api/user/menu"
+            "/api/user/menu",
+            "/api/tagList"
     };
 
     @Override
