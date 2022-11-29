@@ -24,7 +24,7 @@ public class UserParams {
 //    @ApiModelProperty(name = "avator", value = "头像", example = "http:xxxx.xxx.xxx", required = true)
     private String avator;
 //    @ApiModelProperty(name = "phoneNumber", value = "手机号", example = "1838888813", required = true)
-    private Integer phone;
+    private String phone;
 //    @ApiModelProperty(name = "motto", value = "座右铭", example = "今天是美好的一天", required = true)
     private String motto;
 //    @ApiModelProperty(name = "birthday", value = "出生日期", example = "213132131", required = true)

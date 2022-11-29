@@ -52,4 +52,7 @@
         WHERE
             bu.id = #{id}
     </select>
+    <select id="findRepeatUser" resultType="com.domain.User">
+        SELECT * FROM blog_user WHERE user_name = #{userName} OR nick_name = #{nickName} LIMIT 1
+    </select>
 </mapper>

@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class QiniuUtils {
 //    TODO  配置七牛云
-   public static final String url = "http://qiniu.zhoulizheng.cn/";
+   public static final String url = "https://qiniu.zhoulizheng.cn/";
 //   密钥
 String accessKey = "jvrdvQS1dJifEhk_QHfmGI4WcbLQRYmyeAE5tLdb";
 String secretKey = "iZ8hSrAA6BEfUsUFDOvDvemkfTmCTqEJup-Fi9yG";

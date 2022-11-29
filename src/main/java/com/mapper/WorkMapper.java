@@ -1,8 +1,7 @@
 package com.mapper;
 
-import com.domain.Work;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.domain.Work;
 
 /**
 * @author 23340
@@ -10,7 +9,6 @@ import org.apache.ibatis.annotations.Mapper;
 * @createDate 2022-09-22 16:34:10
 * @Entity com.domain.Work
 */
-@Mapper
 public interface WorkMapper extends BaseMapper<Work> {
 
     Integer findWorkCountById(Long id);

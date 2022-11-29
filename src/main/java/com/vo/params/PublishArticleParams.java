@@ -2,6 +2,8 @@ package com.vo.params;
 
 import com.vo.TagVo;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Date;
 import java.util.List;
@@ -13,11 +15,13 @@ import java.util.List;
  * @author : zlz
  * @date : 2022-08-31 09:53
  **/
+@Validated
 @Data
 public class PublishArticleParams {
     /**
      * 文章标题
      */
+    @Length(min = 3,max = 20)
     private String title;
 
     /**
@@ -28,6 +32,7 @@ public class PublishArticleParams {
     /**
      * 文章html
      */
+
     private String bodyHtml;
     /**
      * 文章md
@@ -44,6 +49,7 @@ public class PublishArticleParams {
     /**
      * 文章摘要
      */
+    @Length(min = 3,max = 30)
     private String summary;
     /**
      * 文章标签id

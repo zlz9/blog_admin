@@ -1,6 +1,6 @@
 package com.exception;
 
-import javax.naming.AuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * <h4>blog_admin</h4>

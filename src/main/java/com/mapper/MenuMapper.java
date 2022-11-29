@@ -2,7 +2,6 @@ package com.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.domain.Menu;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -12,7 +11,6 @@ import java.util.List;
 * @createDate 2022-08-19 18:57:24
 * @Entity com.domain.Menu
 */
-@Mapper
 public interface MenuMapper extends BaseMapper<Menu> {
 
     List<String> selectPermsByUserId(Long id);

@@ -28,7 +28,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -166,9 +165,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      */
     @Override
     public ResponseResult publishArticle(PublishArticleParams publishArticleParams) {
-        if (ObjectUtils.isEmpty(publishArticleParams)) {
-            return new ResponseResult<>(400, "参数错误");
-        }
         LoginUser loginUser = (LoginUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long id = loginUser.getUser().getId();
         Article article = new Article();

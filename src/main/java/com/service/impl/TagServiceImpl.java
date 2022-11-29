@@ -78,7 +78,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
     public ResponseResult addTag(TagParams tagParams) {
         Tag tag = new Tag();
         tag.setTagName(tagParams.getTagName());
-        tag.setTagCover(tag.getTagCover());
+        tag.setTagCover(tagParams.getTagCover());
         tagMapper.insert(tag);
         return new ResponseResult<>(200,"创建标签成功");
     }
@@ -92,6 +92,20 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag>
     public List<TagVo> getTagsById(Long id) {
        List <TagVo> tagVoList= tagMapper.findTagsByUserId(id);
         return tagVoList;
+    }
+
+    /**
+     * 根据id删除标签
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult delTag(Long id) {
+        int i = tagMapper.deleteById(id);
+        if (i == 0) {
+            return new ResponseResult<>(400,"删除失败");
+        }
+        return new ResponseResult(200, "删除成功1");
     }
 
     /**

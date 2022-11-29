@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.domain.Tag;
 import com.vo.ArticleVo;
 import com.vo.TagVo;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 * @createDate 2022-08-17 08:24:01
 * @Entity com.domain.Tag
 */
-@Mapper
+
 public interface TagMapper extends BaseMapper<Tag> {
     /**
      * 根据文章id查询标签列表
