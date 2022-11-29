@@ -1,5 +1,12 @@
 server:
   port: 8082
+  ssl:
+    key-store-password: l619sewekb9a
+    key-store: classpath:blog.zhoulizheng.cn.pfx
+    key-store-type: PKCS12
+  my:
+    httpPort: 9000
+    httpsPort: 8082
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
